@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-multipart
+pandas
+openpyxl
+requests
+beautifulsoup4
+playwright
+psycopg2-binary
