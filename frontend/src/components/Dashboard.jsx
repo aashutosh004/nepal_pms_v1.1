@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, A
 import { AlertTriangle, CheckCircle, RefreshCw, TrendingUp, DollarSign, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import API_URL from '../config';
 
 const Dashboard = () => {
     const [portfolio, setPortfolio] = useState(null);
@@ -20,7 +21,7 @@ const Dashboard = () => {
 
     const fetchPortfolio = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/portfolio/1');
+            const res = await axios.get(`${API_URL}/portfolio/1`);
             setPortfolio(res.data);
             setLoading(false);
         } catch (err) {
@@ -31,7 +32,7 @@ const Dashboard = () => {
 
     const checkRebalance = async () => {
         try {
-            const res = await axios.post('http://localhost:8000/rebalance/1');
+            const res = await axios.post(`${API_URL}/rebalance/1`);
             setProposals(res.data);
         } catch (err) {
             console.error(err);

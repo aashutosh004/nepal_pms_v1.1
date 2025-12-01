@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Briefcase, Building, Users, ArrowLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import API_URL from '../config';
 
 const ClientDetails = () => {
     const { portfolioId } = useParams();
@@ -18,11 +19,11 @@ const ClientDetails = () => {
             try {
                 if (portfolioId) {
                     // Detail View
-                    const res = await axios.get(`http://localhost:8000/portfolio/${portfolioId}`);
+                    const res = await axios.get(`${API_URL}/portfolio/${portfolioId}`);
                     setClientData(res.data);
                 } else {
                     // List View
-                    const res = await axios.get('http://localhost:8000/api/portfolios');
+                    const res = await axios.get(`${API_URL}/api/portfolios`);
                     setPortfolioList(res.data);
                 }
             } catch (err) {

@@ -3,6 +3,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Save, UserPlus, Shield, Type, Bell, Link as LinkIcon, LogOut } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const Settings = () => {
     const { user, logout } = useAuth();
@@ -54,7 +55,7 @@ const Settings = () => {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8000/api/users/create', userForm);
+            await axios.post(`${API_URL}/api/users/create`, userForm);
             alert(`User ${userForm.name} created successfully!`);
             // Reset form
             setUserForm({

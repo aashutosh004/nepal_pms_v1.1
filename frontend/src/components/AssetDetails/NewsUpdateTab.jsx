@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ExternalLink, RefreshCw } from 'lucide-react';
+import API_URL from '../../config';
 
 const NewsUpdateTab = () => {
     const [news, setNews] = useState([]);
@@ -20,7 +21,7 @@ const NewsUpdateTab = () => {
         setLoading(true);
         try {
             const querySymbol = symbol === 'General Market News' ? '' : symbol;
-            const response = await axios.get(`http://localhost:8000/api/news?symbol=${querySymbol}`);
+            const response = await axios.get(`${API_URL}/api/news?symbol=${querySymbol}`);
             setNews(response.data);
         } catch (error) {
             console.error("Error fetching news:", error);

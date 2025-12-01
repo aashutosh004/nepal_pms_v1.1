@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, AlertTriangle } from 'lucide-react';
+import API_URL from '../config';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -9,7 +10,7 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/api/users');
+            const res = await axios.get(`${API_URL}/api/users`);
             setUsers(res.data);
             setLoading(false);
         } catch (err) {
@@ -27,7 +28,7 @@ const UserManagement = () => {
         if (!window.confirm(`Are you sure you want to delete user ${userId}?`)) return;
 
         try {
-            await axios.delete(`http://localhost:8000/api/users/${userId}`);
+            await axios.delete(`${API_URL}/api/users/${userId}`);
             alert("User deleted successfully");
             fetchUsers(); // Refresh list
         } catch (err) {
@@ -72,8 +73,8 @@ const UserManagement = () => {
                                     <td className="p-4 text-gray-600 dark:text-gray-400">{user.email}</td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'Admin'
-                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
-                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                             }`}>
                                             {user.role}
                                         </span>

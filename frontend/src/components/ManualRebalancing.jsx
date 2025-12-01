@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ArrowLeft, Download, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../config';
 
 const ManualRebalancing = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const ManualRebalancing = () => {
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/portfolio/1');
+                const res = await axios.get(`${API_URL}/portfolio/1`);
                 setEquityValue(res.data.EquityValue);
                 setDebtValue(res.data.DebtValue);
             } catch (err) {

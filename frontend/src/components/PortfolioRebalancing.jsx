@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import API_URL from '../config';
 
 const PortfolioRebalancing = () => {
     const [equityValue, setEquityValue] = useState(0);
@@ -12,7 +13,7 @@ const PortfolioRebalancing = () => {
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/portfolio/1');
+                const res = await axios.get(`${API_URL}/portfolio/1`);
                 setEquityValue(res.data.EquityValue);
                 setDebtValue(res.data.DebtValue);
                 setLoading(false);

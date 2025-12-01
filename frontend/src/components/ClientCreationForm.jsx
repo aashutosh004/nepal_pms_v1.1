@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Save, Briefcase, Building, Users, X } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const ClientCreationForm = ({ onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -115,7 +116,7 @@ const ClientCreationForm = ({ onClose, onSuccess }) => {
             setSubmitting(true);
             try {
                 // Call backend API
-                const res = await axios.post('http://localhost:8000/api/portfolio/create', formData);
+                const res = await axios.post(`${API_URL}/api/portfolio/create`, formData);
                 alert("Form submitted successfully!");
                 if (onSuccess) onSuccess(res.data.id);
                 if (onClose) onClose();

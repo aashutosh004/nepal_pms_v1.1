@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Upload, Plus, Minus, FileText } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ClientCreationForm from './ClientCreationForm';
+import API_URL from '../config';
 
 const PortfolioOverview = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const PortfolioOverview = () => {
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/portfolio/1');
+                const res = await axios.get(`${API_URL}/portfolio/1`);
                 setPortfolio(res.data);
                 setLoading(false);
             } catch (err) {
@@ -54,7 +55,7 @@ const PortfolioOverview = () => {
 
         setUploading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/portfolio/upload', formData, {
+            const res = await axios.post(`${API_URL}/api/portfolio/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

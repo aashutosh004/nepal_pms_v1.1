@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
 import axios from 'axios';
+import API_URL from '../config';
 import { Lock, User } from 'lucide-react';
 
 const Login = () => {
@@ -17,7 +18,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post('http://localhost:8000/api/login', {
+            const res = await axios.post(`${API_URL}/api/login`, {
                 userId,
                 password
             });

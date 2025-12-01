@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, AlertTriangle } from 'lucide-react';
+import API_URL from '../config';
 
 const ClientDelete = () => {
     const [portfolios, setPortfolios] = useState([]);
@@ -9,7 +10,7 @@ const ClientDelete = () => {
 
     const fetchPortfolios = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/api/portfolios');
+            const res = await axios.get(`${API_URL}/api/portfolios`);
             setPortfolios(res.data);
             setLoading(false);
         } catch (err) {
@@ -26,7 +27,7 @@ const ClientDelete = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this client? This action cannot be undone.")) {
             try {
-                await axios.delete(`http://localhost:8000/api/portfolio/${id}`);
+                await axios.delete(`${API_URL}/api/portfolio/${id}`);
                 // Remove from local state
                 setPortfolios(portfolios.filter(p => p.PortfolioID !== id));
                 alert("Client deleted successfully.");
