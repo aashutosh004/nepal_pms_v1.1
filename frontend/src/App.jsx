@@ -18,8 +18,12 @@ import UserManagement from './components/UserManagement';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import { Menu } from 'lucide-react';
+import React, { useState } from 'react';
+
 const MainLayout = () => {
     const { user } = useAuth();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     if (!user) {
         return <Login />;
@@ -27,8 +31,20 @@ const MainLayout = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100 font-sans dark:bg-gray-900 transition-colors duration-200">
-            <Sidebar />
-            <div className="flex-1 ml-64">
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+            <div className="flex-1 md:ml-64 transition-all duration-300">
+                {/* Mobile Header */}
+                <div className="md:hidden bg-white dark:bg-gray-800 p-4 flex items-center shadow-sm sticky top-0 z-10">
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none"
+                    >
+                        <Menu size={24} />
+                    </button>
+                    <span className="ml-4 font-semibold text-gray-800 dark:text-white">NIMB PMS</span>
+                </div>
+
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/portfolio" element={<PortfolioOverview />} />

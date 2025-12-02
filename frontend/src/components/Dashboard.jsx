@@ -74,12 +74,12 @@ const Dashboard = () => {
     ];
 
     return (
-        <div className="p-8 space-y-8 bg-gray-100 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
+        <div className="p-4 md:p-8 space-y-8 bg-gray-100 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4">
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
                     Add Investment
                 </button>
@@ -97,7 +97,7 @@ const Dashboard = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200">
                     <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Total Portfolio Value</h3>
                     <p className="text-4xl font-bold text-gray-800 dark:text-white">
@@ -158,7 +158,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200">
                     <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Asset Allocation</h3>
                     <div className="h-48">

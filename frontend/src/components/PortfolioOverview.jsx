@@ -92,12 +92,12 @@ const PortfolioOverview = () => {
     ];
 
     return (
-        <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200 relative">
+        <div className="p-4 md:p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200 relative">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Portfolio Overview</h1>
             </div>
 
-            <div className="flex space-x-3 mb-6">
+            <div className="flex flex-wrap gap-3 mb-6">
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center transition-colors">
                     Buy
                 </button>
@@ -114,7 +114,7 @@ const PortfolioOverview = () => {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Column 1: Performance */}
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                     <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4">Performance</h3>

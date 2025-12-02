@@ -21,9 +21,9 @@ const AssetDetails = () => {
     const tabs = ['Overview', 'Transactions', 'Analytics', 'News & Updates'];
 
     return (
-        <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+        <div className="p-4 md:p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             {/* Header */}
-            <div className="bg-gray-900 dark:bg-gray-800 text-white p-6 rounded-t-lg shadow-sm flex items-center space-x-8 transition-colors duration-200">
+            <div className="bg-gray-900 dark:bg-gray-800 text-white p-6 rounded-t-lg shadow-sm flex flex-col md:flex-row md:items-center md:space-x-8 space-y-4 md:space-y-0 transition-colors duration-200">
                 <div>
                     <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Asset Name:</span>
                     <span className="ml-2 text-xl font-bold">Stock A</span>
@@ -39,8 +39,8 @@ const AssetDetails = () => {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 pt-4 rounded-b-lg shadow-sm -mt-6 transition-colors duration-200">
-                <div className="flex space-x-8">
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 pt-4 rounded-b-lg shadow-sm -mt-6 transition-colors duration-200 overflow-x-auto">
+                <div className="flex space-x-8 min-w-max">
                     {tabs.map(tab => (
                         <button
                             key={tab}
@@ -57,7 +57,7 @@ const AssetDetails = () => {
             </div>
 
             {/* Content */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 min-h-[400px] transition-colors duration-200">
+            <div className="bg-white dark:bg-gray-800 p-4 md:p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 min-h-[400px] transition-colors duration-200">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-6">{activeTab}</h2>
 
                 {activeTab === 'Overview' && (
