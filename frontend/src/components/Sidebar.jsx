@@ -77,23 +77,26 @@ const Sidebar = ({ isOpen, onClose }) => {
                             <div key={item.name}>
                                 <div
                                     className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer ${isActive ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
-                                    onClick={() => {
-                                        if (hasSubItems) {
-                                            toggleExpand(item.name);
-                                        } else {
-                                            // Close sidebar on mobile when clicking a link
-                                            if (window.innerWidth < 768) onClose();
-                                        }
-                                    }}
                                 >
-                                    <Link to={item.path} className="flex items-center space-x-3 flex-1" onClick={(e) => {
-                                        if (hasSubItems) e.preventDefault();
-                                    }}>
+                                    <Link
+                                        to={item.path}
+                                        className="flex items-center space-x-3 flex-1"
+                                        onClick={() => {
+                                            if (window.innerWidth < 768) onClose();
+                                        }}
+                                    >
                                         <item.icon size={20} />
                                         <span>{item.name}</span>
                                     </Link>
                                     {hasSubItems && (
-                                        <div onClick={(e) => { e.preventDefault(); toggleExpand(item.name); }}>
+                                        <div
+                                            className="p-1 hover:bg-gray-700 rounded"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleExpand(item.name);
+                                            }}
+                                        >
                                             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                         </div>
                                     )}
