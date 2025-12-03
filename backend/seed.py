@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from models import SessionLocal, engine, init_db, User, Asset, Portfolio, Holding
+from backend.models import SessionLocal, engine, init_db, User, Asset, Portfolio, Holding
 from datetime import datetime
 import random
+import csv
+import os
 
 def seed_data():
     init_db()
@@ -21,39 +23,27 @@ def seed_data():
     db.commit()
     db.refresh(user)
 
-    # 2. Create Assets (20 NEPSE Stocks)
-    nepse_stocks = [
-        ("Nabil Bank", "NABIL", "Equity", 1250.0),
-        ("NIC Asia Bank", "NICA", "Equity", 750.0),
-        ("Shivam Cements", "SHIVM", "Equity", 550.0),
-        ("Himalayan Distillery", "HDL", "Equity", 3200.0),
-        ("Nepal Telecom", "NTC", "Equity", 900.0),
-        ("Upper Tamakoshi", "UPPER", "Equity", 450.0),
-        ("Nepal Life Insurance", "NLIC", "Equity", 1100.0),
-        ("Citizen Investment Trust", "CIT", "Equity", 2800.0),
-        ("Salt Trading", "STC", "Equity", 4500.0),
-        ("Nepal Reinsurance", "NRIC", "Equity", 850.0),
-        ("Global IME Bank", "GBIME", "Equity", 280.0),
-        ("Prabhu Bank", "PRVU", "Equity", 240.0),
-        ("Siddhartha Bank", "SBL", "Equity", 310.0),
-        ("Sanima Bank", "SANIMA", "Equity", 330.0),
-        ("Everest Bank", "EBL", "Equity", 520.0),
-        ("Standard Chartered", "SCB", "Equity", 510.0),
-        ("Nepal Investment Mega", "NIMB", "Equity", 260.0), # The client!
-        ("Agricultural Dev Bank", "ADBL", "Equity", 380.0),
-        ("NMB Bank", "NMB", "Equity", 290.0),
-        ("Nepal Bank", "NBL", "Equity", 270.0),
-        ("NIMB Debenture 2085", "NIMBD85", "Debt", 1000.0),
-        ("Nabil Debenture", "NABILD", "Debt", 1000.0),
-        ("Govt Bond 2080", "GB2080", "Debt", 1000.0),
-    ]
-
+    # 2. Create Assets (Read from CSV)
+    csv_path = os.path.join(os.path.dirname(__file__), 'stocks.csv')
     assets = []
-    for name, ticker, type_, price in nepse_stocks:
-        asset = Asset(AssetName=name, TickerSymbol=ticker, AssetType=type_, CurrentPrice=price)
-        db.add(asset)
-        assets.append(asset)
     
+    try:
+        with open(csv_path, mode='r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                asset = Asset(
+                    AssetName=row['AssetName'],
+                    TickerSymbol=row['TickerSymbol'],
+                    AssetType=row['AssetType'],
+                    CurrentPrice=float(row['CurrentPrice'])
+                )
+                db.add(asset)
+                assets.append(asset)
+    except FileNotFoundError:
+        print(f"Error: {csv_path} not found.")
+        db.close()
+        return
+
     db.commit()
     for a in assets: db.refresh(a)
 
@@ -93,7 +83,12 @@ def seed_data():
 
     total_value = 0
     for ticker, qty, price in holdings_data:
-        asset = next(a for a in assets if a.TickerSymbol == ticker)
+        # Find asset safely
+        asset = next((a for a in assets if a.TickerSymbol == ticker), None)
+        if not asset:
+            print(f"Warning: Asset {ticker} not found in seeded assets.")
+            continue
+            
         holding = Holding(
             PortfolioID=portfolio.PortfolioID,
             AssetID=asset.AssetID,
