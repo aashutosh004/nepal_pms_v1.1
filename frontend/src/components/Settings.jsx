@@ -290,6 +290,16 @@ const Settings = () => {
                     <div className="p-6 border-b border-gray-800">
                         <h2 className="text-lg font-bold text-white">Settings</h2>
                     </div>
+                    {/* Logout Button */}
+                    <div className="px-4 py-2 border-b border-gray-800">
+                        <button
+                            onClick={logout}
+                            className="w-full flex items-center space-x-3 px-6 py-3 text-sm font-medium text-red-400 hover:bg-[#1e293b] hover:text-red-300 rounded transition-colors"
+                        >
+                            <LogOut size={18} />
+                            <span>Logout</span>
+                        </button>
+                    </div>
                     <div className="py-4 flex-1 overflow-y-auto">
                         {filteredMenuItems.map((item) => (
                             <div
@@ -305,16 +315,7 @@ const Settings = () => {
                             </div>
                         ))}
                     </div>
-                    {/* Logout Button */}
-                    <div className="p-4 border-t border-gray-800">
-                        <button
-                            onClick={logout}
-                            className="w-full flex items-center space-x-3 px-6 py-3 text-sm font-medium text-red-400 hover:bg-[#1e293b] hover:text-red-300 rounded transition-colors"
-                        >
-                            <LogOut size={18} />
-                            <span>Logout</span>
-                        </button>
-                    </div>
+
                 </div>
 
                 {/* Main Content */}

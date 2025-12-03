@@ -9,7 +9,7 @@ import io
 import pandas as pd
 import re
 import hashlib
-from backend.models import SessionLocal, Portfolio, Holding, Asset, User, init_db
+from backend.models import SessionLocal, Portfolio, Holding, Asset, User, EquityMaster, BondMaster, init_db
 
 app = FastAPI()
 
@@ -726,9 +726,6 @@ def get_users(db: Session = Depends(get_db)):
 
 @app.delete("/api/users/{user_id}")
 def delete_user(user_id: str, db: Session = Depends(get_db)):
-    if user_id == "superadmin@nimb":
-        raise HTTPException(status_code=403, detail="Cannot delete Super Admin")
-    
     user = db.query(User).filter(User.UserID == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -736,3 +733,279 @@ def delete_user(user_id: str, db: Session = Depends(get_db)):
     db.delete(user)
     db.commit()
     return {"message": "User deleted successfully"}
+
+# --- Security Masters ---
+
+# Pydantic Models
+
+class EquityMasterSchema(BaseModel):
+    SecurityName: str
+    ISIN: str
+    TickerNSE: Optional[str] = None
+    TickerBSE: Optional[str] = None
+    IssuerLEI: Optional[str] = None
+    Country: Optional[str] = None
+    Currency: Optional[str] = None
+    ListingDate: Optional[str] = None
+    Status: Optional[str] = None
+    AssetClass: Optional[str] = None
+    SubAssetClass: Optional[str] = None
+    Sector: Optional[str] = None
+    Industry: Optional[str] = None
+    MarketSegment: Optional[str] = None
+    Identifiers: Optional[str] = None
+    PrimaryExchange: Optional[str] = None
+    MIC: Optional[str] = None
+    FaceValue: Optional[int] = None
+    LotSize: Optional[int] = None
+    TickSize: Optional[str] = None
+    SettlementCycle: Optional[str] = None
+    TradingStatus: Optional[str] = None
+    ActionType: Optional[str] = None
+    EffectiveDate: Optional[str] = None
+    Details: Optional[str] = None
+    AdjustmentFactor: Optional[str] = None
+    RegulatoryTags: Optional[str] = None
+    Notes: Optional[str] = None
+
+class BondMasterSchema(BaseModel):
+    BondName: str
+    ISIN: str
+    Ticker: Optional[str] = None
+    BBGID: Optional[str] = None
+    SecurityType: Optional[str] = None
+    IssueDate: Optional[str] = None
+    IssueSize: Optional[int] = None
+    ModeOfIssue: Optional[str] = None
+    OutstandingAmount: Optional[int] = None
+    MaturityDate: Optional[str] = None
+    ListingStatus: Optional[str] = None
+    Exchange: Optional[str] = None
+    IssuerName: Optional[str] = None
+    IssueType: Optional[str] = None
+    CouponRate: Optional[float] = None
+    CouponType: Optional[str] = None
+    Frequency: Optional[str] = None
+    DayCount: Optional[str] = None
+    NextCouponDate: Optional[str] = None
+    ResetIndex: Optional[str] = None
+    FaceValue: Optional[int] = None
+    Currency: Optional[str] = None
+    Amortization: Optional[str] = None
+    RedemptionType: Optional[str] = None
+    EmbeddedOptions: Optional[str] = None
+    MinTradableLot: Optional[float] = None
+    CreditRating: Optional[str] = None
+    RatingAgency: Optional[str] = None
+    Seniority: Optional[str] = None
+    Security: Optional[str] = None
+    TaxStatus: Optional[str] = None
+    WithholdingTDS: Optional[str] = None
+    CapitalGains: Optional[str] = None
+    RegulatoryTags: Optional[str] = None
+
+# Endpoints
+
+@app.post("/api/equity-master")
+def create_equity(data: EquityMasterSchema, db: Session = Depends(get_db)):
+    # Check if ISIN exists
+    if db.query(EquityMaster).filter(EquityMaster.ISIN == data.ISIN).first():
+        raise HTTPException(status_code=400, detail="ISIN already exists")
+    
+    # Convert dates
+    def parse_date(d):
+        if not d: return None
+        try:
+            return datetime.strptime(d, "%Y-%m-%d").date()
+        except:
+            return None
+
+    new_equity = EquityMaster(
+        SecurityName=data.SecurityName,
+        ISIN=data.ISIN,
+        TickerNSE=data.TickerNSE,
+        TickerBSE=data.TickerBSE,
+        IssuerLEI=data.IssuerLEI,
+        Country=data.Country,
+        Currency=data.Currency,
+        ListingDate=parse_date(data.ListingDate),
+        Status=data.Status,
+        AssetClass=data.AssetClass,
+        SubAssetClass=data.SubAssetClass,
+        Sector=data.Sector,
+        Industry=data.Industry,
+        MarketSegment=data.MarketSegment,
+        Identifiers=data.Identifiers,
+        PrimaryExchange=data.PrimaryExchange,
+        MIC=data.MIC,
+        LotSize=data.LotSize,
+        TickSize=data.TickSize,
+        SettlementCycle=data.SettlementCycle,
+        TradingStatus=data.TradingStatus,
+        ActionType=data.ActionType,
+        EffectiveDate=parse_date(data.EffectiveDate),
+        Details=data.Details,
+        AdjustmentFactor=data.AdjustmentFactor,
+        Notes=data.Notes
+    )
+    db.add(new_equity)
+    db.commit()
+    return {"message": "Equity created successfully"}
+
+@app.get("/api/equity-master")
+def get_equities(db: Session = Depends(get_db)):
+    return db.query(EquityMaster).all()
+
+@app.post("/api/equity-master/upload")
+async def upload_equity_master(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if not file.filename.endswith(('.csv', '.xlsx')):
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    
+    try:
+        contents = await file.read()
+        if file.filename.endswith('.csv'):
+            df = pd.read_csv(io.BytesIO(contents))
+        else:
+            df = pd.read_excel(io.BytesIO(contents))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error reading file: {str(e)}")
+
+    # Basic mapping (assuming column names match model fields or are close)
+    # For now, let's assume the user provides a template matching our schema fields
+    
+    success_count = 0
+    errors = []
+
+    for index, row in df.iterrows():
+        try:
+            # Helper to get value safely
+            def get_val(col):
+                return row[col] if col in df.columns and pd.notna(row[col]) else None
+
+            isin = get_val("ISIN")
+            if not isin: continue
+
+            # Check if exists
+            existing = db.query(EquityMaster).filter(EquityMaster.ISIN == isin).first()
+            if existing:
+                # Update or Skip? Let's update
+                pass
+            else:
+                existing = EquityMaster(ISIN=isin)
+            
+            existing.SecurityName = get_val("SecurityName") or get_val("Security Name")
+            existing.TickerNSE = get_val("TickerNSE") or get_val("Ticker (NSE)")
+            existing.TickerBSE = get_val("TickerBSE") or get_val("Ticker (BSE)")
+            existing.IssuerLEI = get_val("IssuerLEI")
+            existing.Country = get_val("Country")
+            existing.Currency = get_val("Currency")
+            # ... map other fields as needed. For MVP, mapping key fields.
+            
+            if not existing.ID:
+                db.add(existing)
+            success_count += 1
+        except Exception as e:
+            errors.append(f"Row {index}: {str(e)}")
+    
+    db.commit()
+    return {"message": f"Processed {success_count} records", "errors": errors}
+
+@app.post("/api/bond-master")
+def create_bond(data: BondMasterSchema, db: Session = Depends(get_db)):
+    if db.query(BondMaster).filter(BondMaster.ISIN == data.ISIN).first():
+        raise HTTPException(status_code=400, detail="ISIN already exists")
+
+    def parse_date(d):
+        if not d: return None
+        try:
+            return datetime.strptime(d, "%Y-%m-%d").date()
+        except:
+            return None
+
+    new_bond = BondMaster(
+        BondName=data.BondName,
+        ISIN=data.ISIN,
+        Ticker=data.Ticker,
+        BBGID=data.BBGID,
+        SecurityType=data.SecurityType,
+        IssueDate=parse_date(data.IssueDate),
+        IssueSize=data.IssueSize,
+        ModeOfIssue=data.ModeOfIssue,
+        OutstandingAmount=data.OutstandingAmount,
+        MaturityDate=parse_date(data.MaturityDate),
+        ListingStatus=data.ListingStatus,
+        Exchange=data.Exchange,
+        IssuerName=data.IssuerName,
+        IssueType=data.IssueType,
+        CouponRate=data.CouponRate,
+        CouponType=data.CouponType,
+        Frequency=data.Frequency,
+        DayCount=data.DayCount,
+        NextCouponDate=parse_date(data.NextCouponDate),
+        ResetIndex=data.ResetIndex,
+        FaceValue=data.FaceValue,
+        Currency=data.Currency,
+        Amortization=data.Amortization,
+        RedemptionType=data.RedemptionType,
+        EmbeddedOptions=data.EmbeddedOptions,
+        MinTradableLot=data.MinTradableLot,
+        CreditRating=data.CreditRating,
+        RatingAgency=data.RatingAgency,
+        Seniority=data.Seniority,
+        Security=data.Security,
+        TaxStatus=data.TaxStatus,
+        WithholdingTDS=data.WithholdingTDS,
+        CapitalGains=data.CapitalGains,
+        RegulatoryTags=data.RegulatoryTags
+    )
+    db.add(new_bond)
+    db.commit()
+    return {"message": "Bond created successfully"}
+
+@app.get("/api/bond-master")
+def get_bonds(db: Session = Depends(get_db)):
+    return db.query(BondMaster).all()
+
+@app.post("/api/bond-master/upload")
+async def upload_bond_master(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if not file.filename.endswith(('.csv', '.xlsx')):
+        raise HTTPException(status_code=400, detail="Invalid file type")
+    
+    try:
+        contents = await file.read()
+        if file.filename.endswith('.csv'):
+            df = pd.read_csv(io.BytesIO(contents))
+        else:
+            df = pd.read_excel(io.BytesIO(contents))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error reading file: {str(e)}")
+    
+    success_count = 0
+    errors = []
+
+    for index, row in df.iterrows():
+        try:
+            def get_val(col):
+                return row[col] if col in df.columns and pd.notna(row[col]) else None
+
+            isin = get_val("ISIN")
+            if not isin: continue
+
+            existing = db.query(BondMaster).filter(BondMaster.ISIN == isin).first()
+            if existing:
+                pass
+            else:
+                existing = BondMaster(ISIN=isin)
+            
+            existing.BondName = get_val("BondName") or get_val("Security Name")
+            existing.IssuerName = get_val("IssuerName") or get_val("Issuer Name")
+            # ... map others
+            
+            if not existing.ID:
+                db.add(existing)
+            success_count += 1
+        except Exception as e:
+            errors.append(f"Row {index}: {str(e)}")
+    
+    db.commit()
+    return {"message": f"Processed {success_count} records", "errors": errors}

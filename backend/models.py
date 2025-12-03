@@ -2,8 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
-
-
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -103,5 +101,98 @@ class Transaction(Base):
     portfolio = relationship("Portfolio", back_populates="transactions")
     asset = relationship("Asset", back_populates="transactions")
 
+class EquityMaster(Base):
+    __tablename__ = "equity_masters"
+
+    ID = Column(Integer, primary_key=True, index=True)
+    
+    # Security Details
+    ISIN = Column(String, unique=True, index=True)
+    TickerNSE = Column(String)
+    TickerBSE = Column(String)
+    SecurityName = Column(String)
+    IssuerLEI = Column(String)
+    Country = Column(String) # Country_of_Issue
+    Currency = Column(String) # Currency_of_Trading
+    ListingDate = Column(Date)
+    Status = Column(String)
+
+    # Instrument Classification
+    AssetClass = Column(String)
+    SubAssetClass = Column(String)
+    Sector = Column(String)
+    Industry = Column(String)
+    MarketSegment = Column(String)
+    Identifiers = Column(String) # BBGID / RIC
+
+    # Trading Details
+    PrimaryExchange = Column(String) # Exchange_Primary
+    MIC = Column(String)
+    FaceValue = Column(Integer) # Added
+    LotSize = Column(Integer) # Lot_Size_Cash
+    TickSize = Column(String)
+    SettlementCycle = Column(String)
+    TradingStatus = Column(String)
+
+    # Corporate Actions
+    ActionType = Column(String)
+    EffectiveDate = Column(Date)
+    Details = Column(String) # Corporate_Actions_Recent
+    AdjustmentFactor = Column(String)
+    Notes = Column(String)
+
+class BondMaster(Base):
+    __tablename__ = "bond_masters"
+
+    ID = Column(Integer, primary_key=True, index=True)
+    
+    # Security Details
+    BondName = Column(String)
+    ISIN = Column(String, unique=True, index=True)
+    Ticker = Column(String)
+    BBGID = Column(String)
+    SecurityType = Column(String)
+
+    # Issue Details
+    IssueDate = Column(Date)
+    IssueSize = Column(Integer) # INT as per request
+    ModeOfIssue = Column(String)
+    OutstandingAmount = Column(Integer) # INT as per request
+    MaturityDate = Column(Date)
+    ListingStatus = Column(String)
+    Exchange = Column(String)
+    IssuerName = Column(String)
+    IssueType = Column(String)
+
+    # Coupon Details
+    CouponRate = Column(Float)
+    CouponType = Column(String)
+    Frequency = Column(String) # Interest_Payment_frequency
+    DayCount = Column(String) # From UI
+    NextCouponDate = Column(Date) # From UI
+    ResetIndex = Column(String) # From UI
+
+    # Principal Details
+    FaceValue = Column(Integer)
+    Currency = Column(String)
+    Amortization = Column(String) # From UI
+    RedemptionType = Column(String) # From UI
+    EmbeddedOptions = Column(String) # From UI
+    MinTradableLot = Column(Float) # From UI
+
+    # Credit & Risk
+    CreditRating = Column(String)
+    RatingAgency = Column(String)
+    Seniority = Column(String)
+    Security = Column(String) # From UI (Secured/Unsecured)
+
+    # Tax Details
+    TaxStatus = Column(String)
+    WithholdingTDS = Column(String) # From UI
+    CapitalGains = Column(String) # From UI
+    RegulatoryTags = Column(String) # From UI
+
 def init_db():
+    print("Running init_db...")
     Base.metadata.create_all(bind=engine)
+    print("init_db complete.")

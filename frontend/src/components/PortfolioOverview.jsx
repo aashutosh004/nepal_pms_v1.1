@@ -10,12 +10,77 @@ import API_URL from '../config';
 const PortfolioOverview = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [portfolio, setPortfolio] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // Mock Data for Portfolios
+    const mockPortfolios = {
+        'Portfolio-NIBLEQ777731': {
+            PortfolioID: 'Portfolio-NIBLEQ777731',
+            performanceData: [
+                { month: 'Jan', value: 120000 }, { month: 'Feb', value: 125000 }, { month: 'Mar', value: 130000 },
+                { month: 'Apr', value: 128000 }, { month: 'May', value: 140000 }, { month: 'Jun', value: 150000 }
+            ],
+            transactions: [
+                { date: '2025-11-18', desc: 'Bought 50 shares of Nabil Bank' },
+                { date: '2025-11-17', desc: 'Sold 20 shares of NRIC' },
+                { date: '2025-11-15', desc: 'Portfolio rebalanced (Equity Focus)' }
+            ],
+            Holdings: [
+                { Asset: { AssetName: 'Nabil Bank' }, Quantity: 100, MarketValue: 120000, Allocation: 41 },
+                { Asset: { AssetName: 'NTC' }, Quantity: 50, MarketValue: 45000, Allocation: 15 },
+                { Asset: { AssetName: 'Shivm Cement' }, Quantity: 200, MarketValue: 80000, Allocation: 27 },
+                { Asset: { AssetName: 'Himalayan Distillery' }, Quantity: 30, MarketValue: 50000, Allocation: 17 }
+            ]
+        },
+        'Portfolio-NIBLFI888842': {
+            PortfolioID: 'Portfolio-NIBLFI888842',
+            performanceData: [
+                { month: 'Jan', value: 80000 }, { month: 'Feb', value: 81000 }, { month: 'Mar', value: 82000 },
+                { month: 'Apr', value: 81500 }, { month: 'May', value: 83000 }, { month: 'Jun', value: 85000 }
+            ],
+            transactions: [
+                { date: '2025-11-20', desc: 'Bought 100 units of NIBL Debenture' },
+                { date: '2025-11-19', desc: 'Sold 50 units of Govt Bond 2084' },
+                { date: '2025-11-10', desc: 'Bought 200 units of Fixed Deposit' }
+            ],
+            Holdings: [
+                { Asset: { AssetName: 'Govt Bond 2085' }, Quantity: 500, MarketValue: 50000, Allocation: 59 },
+                { Asset: { AssetName: 'NIBL Debenture' }, Quantity: 200, MarketValue: 20000, Allocation: 24 },
+                { Asset: { AssetName: 'Fixed Deposit' }, Quantity: 1, MarketValue: 15000, Allocation: 17 }
+            ]
+        },
+        'Portfolio-NIBLMF999953': {
+            PortfolioID: 'Portfolio-NIBLMF999953',
+            performanceData: [
+                { month: 'Jan', value: 240000 }, { month: 'Feb', value: 242000 }, { month: 'Mar', value: 244000 },
+                { month: 'Apr', value: 246000 }, { month: 'May', value: 248000 }, { month: 'Jun', value: 250000 }
+            ],
+            transactions: [
+                { date: '2025-11-25', desc: 'Bought Treasury Bills' },
+                { date: '2025-11-22', desc: 'Sold NIBL Sahabhagita Fund (Partial)' },
+                { date: '2025-11-05', desc: 'Bought Citizen Unit Scheme' }
+            ],
+            Holdings: [
+                { Asset: { AssetName: 'NIBL Sahabhagita Fund' }, Quantity: 5000, MarketValue: 150000, Allocation: 60 },
+                { Asset: { AssetName: 'Treasury Bills' }, Quantity: 1000, MarketValue: 100000, Allocation: 40 }
+            ]
+        }
+    };
+
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
+    const [portfolio, setPortfolio] = useState(mockPortfolios['Portfolio-NIBLEQ777731']);
+    const [loading, setLoading] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [uploadFile, setUploadFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
+    useEffect(() => {
+        setPortfolio(mockPortfolios[selectedPortfolioId]);
+    }, [selectedPortfolioId]);
+
+    const handlePortfolioChange = (e) => {
+        setSelectedPortfolioId(e.target.value);
+    };
+
+    /*
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
@@ -29,6 +94,7 @@ const PortfolioOverview = () => {
         };
         fetchPortfolio();
     }, []);
+    */
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -75,21 +141,11 @@ const PortfolioOverview = () => {
     if (loading) return <div className="p-8">Loading...</div>;
     if (!portfolio) return <div className="p-8 text-red-500">Error loading portfolio.</div>;
 
-    // Dummy data for the chart
-    const performanceData = [
-        { month: 'Jan', value: 90000 },
-        { month: 'Feb', value: 92000 },
-        { month: 'Mar', value: 91500 },
-        { month: 'Apr', value: 94000 },
-        { month: 'May', value: 98000 },
-        { month: 'Jun', value: 100000 },
-    ];
-
-    // Dummy transactions
-    const transactions = [
-        { date: '2025-11-18', desc: 'Bought 50 shares of Stock A' },
-        { date: '2025-11-17', desc: 'Sold 20 shares of Stock B' },
-    ];
+    const performanceData = portfolio.performanceData || [];
+    const allTransactions = portfolio.transactions || [];
+    const transactions = allTransactions.filter(t =>
+        t.desc.toLowerCase().includes('bought') || t.desc.toLowerCase().includes('sold')
+    );
 
     return (
         <div className="p-4 md:p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200 relative">
@@ -98,6 +154,16 @@ const PortfolioOverview = () => {
             </div>
 
             <div className="flex flex-wrap gap-3 mb-6">
+                <select
+                    value={selectedPortfolioId}
+                    onChange={handlePortfolioChange}
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                >
+                    <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                    <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                    <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                </select>
+
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center transition-colors">
                     Buy
                 </button>

@@ -5,18 +5,60 @@ import { useTheme } from '../context/ThemeContext';
 
 const AssetDetails = () => {
     const [activeTab, setActiveTab] = useState('Overview');
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
     const { theme } = useTheme();
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    // Dummy data for the chart
-    const priceHistory = [
-        { date: '2024 Q1', price: 42 },
-        { date: '2024 Q2', price: 45 },
-        { date: '2024 Q3', price: 48 },
-        { date: '2024 Q4', price: 46 },
-        { date: '2025 Q1', price: 50 },
-        { date: '2025 Q2', price: 55 },
-    ];
+    // Mock Data for Portfolios
+    const mockPortfolios = {
+        'Portfolio-NIBLEQ777731': {
+            PortfolioID: 'Portfolio-NIBLEQ777731',
+            priceHistory: [
+                { date: '2024 Q1', price: 42 }, { date: '2024 Q2', price: 45 }, { date: '2024 Q3', price: 48 },
+                { date: '2024 Q4', price: 46 }, { date: '2025 Q1', price: 50 }, { date: '2025 Q2', price: 55 }
+            ],
+            transactions: [
+                { date: '2025-11-18', desc: 'Bought 50 shares of Nabil Bank' },
+                { date: '2025-11-17', desc: 'Sold 20 shares of NRIC' },
+                { date: '2025-11-15', desc: 'Portfolio rebalanced (Equity Focus)' }
+            ]
+        },
+        'Portfolio-NIBLFI888842': {
+            PortfolioID: 'Portfolio-NIBLFI888842',
+            priceHistory: [
+                { date: '2024 Q1', price: 100 }, { date: '2024 Q2', price: 102 }, { date: '2024 Q3', price: 103 },
+                { date: '2024 Q4', price: 104 }, { date: '2025 Q1', price: 105 }, { date: '2025 Q2', price: 106 }
+            ],
+            transactions: [
+                { date: '2025-11-20', desc: 'Coupon received from Govt Bond 2085' },
+                { date: '2025-11-19', desc: 'Bought 100 units of NIBL Debenture' },
+                { date: '2025-11-10', desc: 'SIP Installment Processed' }
+            ]
+        },
+        'Portfolio-NIBLMF999953': {
+            PortfolioID: 'Portfolio-NIBLMF999953',
+            priceHistory: [
+                { date: '2024 Q1', price: 15 }, { date: '2024 Q2', price: 16 }, { date: '2024 Q3', price: 15.5 },
+                { date: '2024 Q4', price: 17 }, { date: '2025 Q1', price: 18 }, { date: '2025 Q2', price: 19 }
+            ],
+            transactions: [
+                { date: '2025-11-25', desc: 'Dividend Reinvestment (NIBL Sahabhagita)' },
+                { date: '2025-11-22', desc: 'Bought Treasury Bills' },
+                { date: '2025-11-05', desc: 'Quarterly Review Completed' }
+            ]
+        }
+    };
+
+    const currentPortfolio = mockPortfolios[selectedPortfolioId];
+    const priceHistory = currentPortfolio ? currentPortfolio.priceHistory : [];
+    const allTransactions = currentPortfolio ? currentPortfolio.transactions : [];
+    const transactions = allTransactions.filter(t =>
+        t.desc.toLowerCase().includes('bought') || t.desc.toLowerCase().includes('sold')
+    );
+
+    const handlePortfolioChange = (e) => {
+        setSelectedPortfolioId(e.target.value);
+    };
 
     const tabs = ['Overview', 'Transactions', 'Analytics', 'News & Updates'];
 
@@ -58,7 +100,20 @@ const AssetDetails = () => {
 
             {/* Content */}
             <div className="bg-white dark:bg-gray-800 p-4 md:p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 min-h-[400px] transition-colors duration-200">
-                <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-6">{activeTab}</h2>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-white">{activeTab}</h2>
+                    {activeTab === 'Overview' && (
+                        <select
+                            value={selectedPortfolioId}
+                            onChange={handlePortfolioChange}
+                            className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors"
+                        >
+                            <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                            <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                            <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                        </select>
+                    )}
+                </div>
 
                 {activeTab === 'Overview' && (
                     <div className="h-80 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700">
@@ -95,6 +150,28 @@ const AssetDetails = () => {
                             </ResponsiveContainer>
                             <div className="text-center text-gray-400 text-sm mt-2">Price History Chart Placeholder</div>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'Transactions' && (
+                    <div className="space-y-4">
+                        {transactions.length > 0 ? (
+                            transactions.map((t, i) => (
+                                <div key={i} className="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-lg">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-900 dark:text-white">{t.desc}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.date}</span>
+                                    </div>
+                                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Completed
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-gray-500 dark:text-gray-400 italic text-center py-8">
+                                No transactions found for this portfolio.
+                            </div>
+                        )}
                     </div>
                 )}
 

@@ -7,26 +7,74 @@ const Reports = () => {
     const { theme } = useTheme();
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    // Dummy data for charts
-    const performanceData = [
-        { name: 'Jan', value: 4000 },
-        { name: 'Feb', value: 3000 },
-        { name: 'Mar', value: 2000 },
-        { name: 'Apr', value: 2780 },
-        { name: 'May', value: 1890 },
-        { name: 'Jun', value: 2390 },
-    ];
+    const [selectedPortfolioId, setSelectedPortfolioId] = React.useState('Portfolio-NIBLEQ777731');
 
-    const riskData = [
-        { name: 'Low Risk', value: 400 },
-        { name: 'Medium Risk', value: 300 },
-        { name: 'High Risk', value: 300 },
-    ];
+    // Mock Data for Portfolios
+    const mockPortfolios = {
+        'Portfolio-NIBLEQ777731': {
+            PortfolioID: 'Portfolio-NIBLEQ777731',
+            performanceMetrics: { ROI: '12%', CAGR: '10%', XIRR: '11%' },
+            riskMetrics: { VaR: '5%', SharpeRatio: '1.2' },
+            performanceData: [
+                { name: 'Jan', value: 4000 }, { name: 'Feb', value: 3000 }, { name: 'Mar', value: 2000 },
+                { name: 'Apr', value: 2780 }, { name: 'May', value: 1890 }, { name: 'Jun', value: 2390 }
+            ],
+            riskData: [
+                { name: 'Low Risk', value: 400 }, { name: 'Medium Risk', value: 300 }, { name: 'High Risk', value: 300 }
+            ]
+        },
+        'Portfolio-NIBLFI888842': {
+            PortfolioID: 'Portfolio-NIBLFI888842',
+            performanceMetrics: { ROI: '8%', CAGR: '7%', XIRR: '7.5%' },
+            riskMetrics: { VaR: '2%', SharpeRatio: '1.5' },
+            performanceData: [
+                { name: 'Jan', value: 2000 }, { name: 'Feb', value: 2100 }, { name: 'Mar', value: 2200 },
+                { name: 'Apr', value: 2150 }, { name: 'May', value: 2300 }, { name: 'Jun', value: 2400 }
+            ],
+            riskData: [
+                { name: 'Low Risk', value: 800 }, { name: 'Medium Risk', value: 150 }, { name: 'High Risk', value: 50 }
+            ]
+        },
+        'Portfolio-NIBLMF999953': {
+            PortfolioID: 'Portfolio-NIBLMF999953',
+            performanceMetrics: { ROI: '15%', CAGR: '12%', XIRR: '14%' },
+            riskMetrics: { VaR: '8%', SharpeRatio: '0.9' },
+            performanceData: [
+                { name: 'Jan', value: 5000 }, { name: 'Feb', value: 5200 }, { name: 'Mar', value: 4800 },
+                { name: 'Apr', value: 5500 }, { name: 'May', value: 5800 }, { name: 'Jun', value: 6000 }
+            ],
+            riskData: [
+                { name: 'Low Risk', value: 200 }, { name: 'Medium Risk', value: 400 }, { name: 'High Risk', value: 400 }
+            ]
+        }
+    };
+
+    const currentPortfolio = mockPortfolios[selectedPortfolioId];
+    const performanceData = currentPortfolio ? currentPortfolio.performanceData : [];
+    const riskData = currentPortfolio ? currentPortfolio.riskData : [];
+    const performanceMetrics = currentPortfolio ? currentPortfolio.performanceMetrics : { ROI: '-', CAGR: '-', XIRR: '-' };
+    const riskMetrics = currentPortfolio ? currentPortfolio.riskMetrics : { VaR: '-', SharpeRatio: '-' };
+
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+    const handlePortfolioChange = (e) => {
+        setSelectedPortfolioId(e.target.value);
+    };
 
     return (
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Reports</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Reports</h1>
+                <select
+                    value={selectedPortfolioId}
+                    onChange={handlePortfolioChange}
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                >
+                    <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                    <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                    <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                </select>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Performance Report */}
@@ -44,15 +92,15 @@ const Reports = () => {
                             <tbody>
                                 <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                                     <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">ROI</td>
-                                    <td className="px-4 py-2">12%</td>
+                                    <td className="px-4 py-2">{performanceMetrics.ROI}</td>
                                 </tr>
                                 <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                                     <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">CAGR</td>
-                                    <td className="px-4 py-2">10%</td>
+                                    <td className="px-4 py-2">{performanceMetrics.CAGR}</td>
                                 </tr>
                                 <tr className="bg-white dark:bg-gray-800">
                                     <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">XIRR</td>
-                                    <td className="px-4 py-2">11%</td>
+                                    <td className="px-4 py-2">{performanceMetrics.XIRR}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -89,11 +137,11 @@ const Reports = () => {
                             <tbody>
                                 <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
                                     <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">VaR</td>
-                                    <td className="px-4 py-2">5%</td>
+                                    <td className="px-4 py-2">{riskMetrics.VaR}</td>
                                 </tr>
                                 <tr className="bg-white dark:bg-gray-800">
                                     <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">Sharpe Ratio</td>
-                                    <td className="px-4 py-2">1.2</td>
+                                    <td className="px-4 py-2">{riskMetrics.SharpeRatio}</td>
                                 </tr>
                             </tbody>
                         </table>

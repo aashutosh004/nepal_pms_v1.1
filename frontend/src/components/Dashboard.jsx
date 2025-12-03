@@ -7,18 +7,94 @@ import { useTheme } from '../context/ThemeContext';
 import API_URL from '../config';
 
 const Dashboard = () => {
-    const [portfolio, setPortfolio] = useState(null);
+    // Mock Data for Portfolios
+    const mockPortfolios = {
+        'Portfolio-NIBLEQ777731': {
+            PortfolioID: 'Portfolio-NIBLEQ777731',
+            PortfolioName: 'High Growth Strategy',
+            TotalValue: 150000,
+            EquityValue: 90000,
+            DebtValue: 40000,
+            MutualFundValue: 20000,
+            EquityPercent: 60,
+            DebtPercent: 26.6,
+            MutualFundPercent: 13.4,
+            performanceData: [
+                { month: 'Jan', value: 120000 }, { month: 'Feb', value: 125000 }, { month: 'Mar', value: 130000 },
+                { month: 'Apr', value: 128000 }, { month: 'May', value: 140000 }, { month: 'Jun', value: 150000 }
+            ],
+            gainLossData: [
+                { class: 'Equity', value: 15000 }, { class: 'Debt', value: 2000 }, { class: 'Mutual Funds', value: 1500 }
+            ],
+            recentActivity: [
+                { date: '2025-11-18', desc: 'Bought 50 shares of Nabil Bank' },
+                { date: '2025-11-17', desc: 'Sold 20 shares of NRIC' },
+                { date: '2025-11-15', desc: 'Portfolio rebalanced (Equity Focus)' }
+            ]
+        },
+        'Portfolio-NIBLFI888842': {
+            PortfolioID: 'Portfolio-NIBLFI888842',
+            PortfolioName: 'Balanced Income',
+            TotalValue: 85000,
+            EquityValue: 30000,
+            DebtValue: 45000,
+            MutualFundValue: 10000,
+            EquityPercent: 35.3,
+            DebtPercent: 52.9,
+            MutualFundPercent: 11.8,
+            performanceData: [
+                { month: 'Jan', value: 80000 }, { month: 'Feb', value: 81000 }, { month: 'Mar', value: 82000 },
+                { month: 'Apr', value: 81500 }, { month: 'May', value: 83000 }, { month: 'Jun', value: 85000 }
+            ],
+            gainLossData: [
+                { class: 'Equity', value: 3000 }, { class: 'Debt', value: 1500 }, { class: 'Mutual Funds', value: 500 }
+            ],
+            recentActivity: [
+                { date: '2025-11-20', desc: 'Coupon received from Govt Bond 2085' },
+                { date: '2025-11-19', desc: 'Bought 100 units of NIBL Debenture' },
+                { date: '2025-11-10', desc: 'SIP Installment Processed' }
+            ]
+        },
+        'Portfolio-NIBLMF999953': {
+            PortfolioID: 'Portfolio-NIBLMF999953',
+            PortfolioName: 'Conservative Saver',
+            TotalValue: 250000,
+            EquityValue: 50000,
+            DebtValue: 150000,
+            MutualFundValue: 50000,
+            EquityPercent: 20,
+            DebtPercent: 60,
+            MutualFundPercent: 20,
+            performanceData: [
+                { month: 'Jan', value: 240000 }, { month: 'Feb', value: 242000 }, { month: 'Mar', value: 244000 },
+                { month: 'Apr', value: 246000 }, { month: 'May', value: 248000 }, { month: 'Jun', value: 250000 }
+            ],
+            gainLossData: [
+                { class: 'Equity', value: 5000 }, { class: 'Debt', value: 8000 }, { class: 'Mutual Funds', value: 2000 }
+            ],
+            recentActivity: [
+                { date: '2025-11-25', desc: 'Dividend Reinvestment (NIBL Sahabhagita)' },
+                { date: '2025-11-22', desc: 'Bought Treasury Bills' },
+                { date: '2025-11-05', desc: 'Quarterly Review Completed' }
+            ]
+        }
+    };
+
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
+    const [portfolio, setPortfolio] = useState(mockPortfolios['Portfolio-NIBLEQ777731']);
     const [proposals, setProposals] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Set to false since we use mock data
     const navigate = useNavigate();
     const { theme } = useTheme();
 
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     useEffect(() => {
-        fetchPortfolio();
-    }, []);
+        // Simulate API call or just set data
+        setPortfolio(mockPortfolios[selectedPortfolioId]);
+    }, [selectedPortfolioId]);
 
+    /* 
     const fetchPortfolio = async () => {
         try {
             const res = await axios.get(`${API_URL}/portfolio/1`);
@@ -28,6 +104,11 @@ const Dashboard = () => {
             console.error(err);
             setLoading(false);
         }
+    };
+    */
+
+    const handlePortfolioChange = (e) => {
+        setSelectedPortfolioId(e.target.value);
     };
 
     const checkRebalance = async () => {
@@ -50,28 +131,9 @@ const Dashboard = () => {
 
     const COLORS = ['#C0392B', '#2980B9', '#F1C40F'];
 
-    // Mock data to match the visual style better
-    const performanceData = [
-        { month: 'Jan', value: 90000 },
-        { month: 'Feb', value: 92000 },
-        { month: 'Mar', value: 94500 },
-        { month: 'Apr', value: 96000 },
-        { month: 'May', value: 98500 },
-        { month: 'Jun', value: 100000 },
-    ];
-
-    const gainLossData = [
-        { class: 'Equity', value: 2500 },
-        { class: 'Debt', value: 500 },
-        { class: 'Mutual Funds', value: 1000 },
-    ];
-
-    const recentActivity = [
-        { date: '2025-11-18', desc: 'Bought 50 shares of Stock A' },
-        { date: '2025-11-17', desc: 'Sold 20 shares of Stock B' },
-        { date: '2025-11-16', desc: 'Dividend received from Mutual Fund C' },
-        { date: '2025-11-15', desc: 'Portfolio rebalanced' },
-    ];
+    const performanceData = portfolio.performanceData || [];
+    const gainLossData = portfolio.gainLossData || [];
+    const recentActivity = portfolio.recentActivity || [];
 
     return (
         <div className="p-4 md:p-8 space-y-8 bg-gray-100 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
@@ -80,6 +142,16 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-wrap gap-4">
+                <select
+                    value={selectedPortfolioId}
+                    onChange={handlePortfolioChange}
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                >
+                    <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                    <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                    <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                </select>
+
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
                     Add Investment
                 </button>

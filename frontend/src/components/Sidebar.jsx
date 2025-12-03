@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, FileCheck, Settings, PieChart, FileText, ChevronDown, ChevronRight, User } from 'lucide-react';
+import { LayoutDashboard, PieChart, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
@@ -23,8 +23,26 @@ const Sidebar = ({ isOpen, onClose }) => {
                 { name: 'Client Details', icon: User, path: '/client-details' }
             ]
         },
-        { name: 'Asset Details', icon: FileText, path: '/asset-details' },
+        {
+            name: 'Asset Details',
+            icon: FileText,
+            path: '/asset-details',
+            subItems: [
+                { name: 'Overview', icon: FileText, path: '/asset-details' },
+                { name: 'Equity Master', icon: FileText, path: '/asset-details/equity' },
+                { name: 'Bond Master', icon: FileText, path: '/asset-details/bond' }
+            ]
+        },
         { name: 'Transactions', icon: FileText, path: '/transactions' },
+        {
+            name: 'Corporate Action',
+            icon: Briefcase,
+            path: '/corporate-action',
+            subItems: [
+                { name: 'Voluntary', icon: CheckCircle, path: '/corporate-action/voluntary' },
+                { name: 'Non-Voluntary', icon: AlertCircle, path: '/corporate-action/non-voluntary' }
+            ]
+        },
         { name: 'Reports', icon: FileText, path: '/reports' },
         { name: 'Reconciliation', icon: FileCheck, path: '/reconciliation' },
         { name: 'Settings', icon: Settings, path: '/settings' },
@@ -69,7 +87,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     {menuItems.map((item) => {
-                        const isActive = location.pathname === item.path;
+                        const isActive = location.pathname === item.path || (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
                         const isExpanded = expanded[item.name];
                         const hasSubItems = item.subItems && item.subItems.length > 0;
 

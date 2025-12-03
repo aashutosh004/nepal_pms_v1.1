@@ -2,10 +2,37 @@ import React, { useState } from 'react';
 import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 const Transactions = () => {
-    const [transactions, setTransactions] = useState([
-        { id: 1, date: '2025-11-18', type: 'Buy', quantity: 50, price: 100, amount: 5000 },
-        { id: 2, date: '2025-11-17', type: 'Sell', quantity: 20, price: 120, amount: 2400 },
-    ]);
+    // Mock Data for Portfolios
+    const [mockPortfolios, setMockPortfolios] = useState({
+        'Portfolio-NIBLEQ777731': {
+            PortfolioID: 'Portfolio-NIBLEQ777731',
+            transactions: [
+                { id: 1, date: '2025-11-18', type: 'Buy', quantity: 50, price: 100, amount: 5000 },
+                { id: 2, date: '2025-11-17', type: 'Sell', quantity: 20, price: 120, amount: 2400 },
+                { id: 3, date: '2025-11-15', type: 'Buy', quantity: 100, price: 90, amount: 9000 }
+            ]
+        },
+        'Portfolio-NIBLFI888842': {
+            PortfolioID: 'Portfolio-NIBLFI888842',
+            transactions: [
+                { id: 1, date: '2025-11-20', type: 'Buy', quantity: 100, price: 200, amount: 20000 },
+                { id: 2, date: '2025-11-19', type: 'Sell', quantity: 50, price: 210, amount: 10500 },
+                { id: 3, date: '2025-11-10', type: 'Buy', quantity: 200, price: 150, amount: 30000 }
+            ]
+        },
+        'Portfolio-NIBLMF999953': {
+            PortfolioID: 'Portfolio-NIBLMF999953',
+            transactions: [
+                { id: 1, date: '2025-11-25', type: 'Buy', quantity: 1000, price: 10, amount: 10000 },
+                { id: 2, date: '2025-11-22', type: 'Sell', quantity: 500, price: 12, amount: 6000 },
+                { id: 3, date: '2025-11-05', type: 'Buy', quantity: 2000, price: 9, amount: 18000 }
+            ]
+        }
+    });
+
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
+
+    const transactions = mockPortfolios[selectedPortfolioId]?.transactions || [];
 
     const [formData, setFormData] = useState({
         type: 'Buy',
@@ -21,6 +48,10 @@ const Transactions = () => {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handlePortfolioChange = (e) => {
+        setSelectedPortfolioId(e.target.value);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const newTransaction = {
@@ -31,7 +62,15 @@ const Transactions = () => {
             price: Number(formData.price),
             amount: Number(formData.quantity) * Number(formData.price)
         };
-        setTransactions([newTransaction, ...transactions]);
+
+        setMockPortfolios(prev => ({
+            ...prev,
+            [selectedPortfolioId]: {
+                ...prev[selectedPortfolioId],
+                transactions: [newTransaction, ...prev[selectedPortfolioId].transactions]
+            }
+        }));
+
         setFormData({ type: 'Buy', date: '', quantity: '', price: '' });
     };
 
@@ -70,7 +109,18 @@ const Transactions = () => {
 
             {/* Add Transaction Form */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Add Transaction</h2>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Add Transaction</h2>
+                    <select
+                        value={selectedPortfolioId}
+                        onChange={handlePortfolioChange}
+                        className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors"
+                    >
+                        <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                        <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                        <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                    </select>
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <select

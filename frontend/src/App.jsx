@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Reconciliation from './components/Reconciliation';
@@ -14,6 +14,9 @@ import Settings from './components/Settings';
 import ClientDelete from './components/ClientDelete';
 import Login from './components/Login';
 import UserManagement from './components/UserManagement';
+import EquityMaster from './components/EquityMaster';
+import BondMaster from './components/BondMaster';
+import CorporateAction from './components/CorporateAction';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -44,21 +47,28 @@ const MainLayout = () => {
                     <span className="ml-4 font-semibold text-gray-800 dark:text-white">NIMB PMS</span>
                 </div>
 
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/portfolio" element={<PortfolioOverview />} />
-                    <Route path="/client-details" element={<ClientDetails />} />
-                    <Route path="/client-details/delete" element={<ClientDelete />} />
-                    <Route path="/client-details/:portfolioId" element={<ClientDetails />} />
-                    <Route path="/asset-details" element={<AssetDetails />} />
-                    <Route path="/transactions" element={<Transactions />} />
-                    <Route path="/reports" element={<Reports />} />
-                    <Route path="/rebalancing" element={<PortfolioRebalancing />} />
-                    <Route path="/manual-rebalancing" element={<ManualRebalancing />} />
-                    <Route path="/reconciliation" element={<Reconciliation />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/user-management/hidden" element={<UserManagement />} />
-                </Routes>
+                <main className="p-6">
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/portfolio" element={<PortfolioOverview />} />
+                        <Route path="/client-details" element={<ClientDetails />} />
+                        <Route path="/client-details/delete" element={<ClientDelete />} />
+                        <Route path="/client-details/:portfolioId" element={<ClientDetails />} />
+                        <Route path="/asset-details" element={<AssetDetails />} />
+                        <Route path="/asset-details/equity" element={<EquityMaster />} />
+                        <Route path="/asset-details/bond" element={<BondMaster />} />
+                        <Route path="/transactions" element={<Transactions />} />
+                        <Route path="/corporate-action" element={<Navigate to="/corporate-action/voluntary" replace />} />
+                        <Route path="/corporate-action/voluntary" element={<CorporateAction />} />
+                        <Route path="/corporate-action/non-voluntary" element={<CorporateAction />} />
+                        <Route path="/reports" element={<Reports />} />
+                        <Route path="/rebalancing" element={<PortfolioRebalancing />} />
+                        <Route path="/manual-rebalancing" element={<ManualRebalancing />} />
+                        <Route path="/reconciliation" element={<Reconciliation />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/user-management/hidden" element={<UserManagement />} />
+                    </Routes>
+                </main>
             </div>
         </div>
     );
