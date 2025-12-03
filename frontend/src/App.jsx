@@ -9,6 +9,7 @@ import PortfolioOverview from './components/PortfolioOverview';
 import ClientDetails from './components/ClientDetails';
 import AssetDetails from './components/AssetDetails';
 import Transactions from './components/Transactions';
+import TransactionDetails from './components/TransactionDetails';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 import ClientDelete from './components/ClientDelete';
@@ -58,6 +59,7 @@ const MainLayout = () => {
                         <Route path="/asset-details/equity" element={<EquityMaster />} />
                         <Route path="/asset-details/bond" element={<BondMaster />} />
                         <Route path="/transactions" element={<Transactions />} />
+                        <Route path="/transaction-details" element={<TransactionDetails />} />
                         <Route path="/corporate-action" element={<Navigate to="/corporate-action/voluntary" replace />} />
                         <Route path="/corporate-action/voluntary" element={<CorporateAction />} />
                         <Route path="/corporate-action/non-voluntary" element={<CorporateAction />} />
@@ -74,13 +76,17 @@ const MainLayout = () => {
     );
 };
 
+import { TransactionProvider } from './context/TransactionContext';
+
 function App() {
     return (
         <AuthProvider>
             <ThemeProvider>
-                <Router>
-                    <MainLayout />
-                </Router>
+                <TransactionProvider>
+                    <Router>
+                        <MainLayout />
+                    </Router>
+                </TransactionProvider>
             </ThemeProvider>
         </AuthProvider>
     );

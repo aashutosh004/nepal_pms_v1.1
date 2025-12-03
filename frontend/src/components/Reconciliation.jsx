@@ -316,7 +316,7 @@ const Reconciliation = () => {
                         onClick={loadDemoData}
                         className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium"
                     >
-                        Load Demo Data
+                        Load Recon File
                     </button>
                     <button
                         onClick={handleTriggerRecon}
@@ -448,8 +448,8 @@ const Reconciliation = () => {
                                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{b.TradeID}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold flex w-fit items-center ${b.Type === 'Mismatch'
-                                                    ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                                                    : 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+                                                ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                                : 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
                                                 }`}>
                                                 {b.Type === 'Mismatch' ? <AlertTriangle size={12} className="mr-1" /> : <AlertTriangle size={12} className="mr-1" />}
                                                 {b.Type}

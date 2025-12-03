@@ -11,6 +11,7 @@ const CorporateAction = () => {
     const [eventType, setEventType] = useState('');
     const [recordDate, setRecordDate] = useState('');
     const [paymentDate, setPaymentDate] = useState('');
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
 
     // Reset event type when asset class changes
     useEffect(() => {
@@ -49,6 +50,21 @@ const CorporateAction = () => {
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6">Corporate Action Details</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Portfolio Selection */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold text-gray-600 dark:text-gray-400">Select Portfolio</label>
+                        <select
+                            value={selectedPortfolioId}
+                            onChange={(e) => setSelectedPortfolioId(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+                        >
+                            <option value="" disabled>Select Portfolio</option>
+                            <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                            <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                            <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                        </select>
+                    </div>
+
                     {/* Asset Class */}
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-gray-600 dark:text-gray-400">Asset Class</label>
@@ -56,8 +72,8 @@ const CorporateAction = () => {
                             <button
                                 onClick={() => setAssetClass('Equity')}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${assetClass === 'Equity'
-                                        ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800'
-                                        : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                                    ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800'
+                                    : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                                     }`}
                             >
                                 Equity
@@ -65,8 +81,8 @@ const CorporateAction = () => {
                             <button
                                 onClick={() => setAssetClass('Bond')}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${assetClass === 'Bond'
-                                        ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800'
-                                        : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                                    ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800'
+                                    : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                                     }`}
                             >
                                 Bond

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
 
 const Sidebar = ({ isOpen, onClose }) => {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const location = useLocation();
     const [expanded, setExpanded] = useState({ Portfolio: true });
 
@@ -35,7 +35,16 @@ const Sidebar = ({ isOpen, onClose }) => {
                 { name: 'Bond Master', icon: FileText, path: '/asset-details/bond' }
             ]
         },
-        { name: 'Transactions', icon: FileText, path: '/transactions', roles: ['Investment Manager'] },
+        {
+            name: 'Transactions',
+            icon: FileText,
+            path: '/transactions',
+            roles: ['Investment Manager'],
+            subItems: [
+                { name: 'Overview', icon: FileText, path: '/transactions' },
+                { name: 'Transaction Details', icon: FileText, path: '/transaction-details' }
+            ]
+        },
         {
             name: 'Corporate Action',
             icon: Briefcase,
@@ -147,8 +156,20 @@ const Sidebar = ({ isOpen, onClose }) => {
                     })}
                 </nav>
                 <div className="p-4 border-t border-gray-700">
-                    <div className="text-sm text-gray-400">Logged in as</div>
-                    <div className="font-semibold">{getDisplayName()}</div>
+                    <div className="flex flex-col gap-4">
+                        <div>
+                            <div className="text-sm text-gray-400">Logged in as</div>
+                            <div className="font-semibold text-sm">{getDisplayName()}</div>
+                        </div>
+                        <button
+                            onClick={logout}
+                            className="group flex items-center justify-center gap-3 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-900/20 to-red-800/20 border border-red-900/50 text-red-400 hover:from-red-600 hover:to-red-700 hover:text-white hover:border-red-500 transition-all duration-300 shadow-lg hover:shadow-red-900/20"
+                            title="Logout"
+                        >
+                            <LogOut size={18} className="group-hover:-translate-x-1 transition-transform duration-300" />
+                            <span className="font-medium text-sm tracking-wide">Logout</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

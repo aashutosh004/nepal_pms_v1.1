@@ -80,60 +80,45 @@ const Dashboard = () => {
         }
     };
 
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
-    const [portfolio, setPortfolio] = useState(mockPortfolios['Portfolio-NIBLEQ777731']);
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
+    const [portfolio, setPortfolio] = useState(null);
     const [proposals, setProposals] = useState([]);
-    const [loading, setLoading] = useState(false); // Set to false since we use mock data
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { theme } = useTheme();
 
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     useEffect(() => {
-        // Simulate API call or just set data
-        setPortfolio(mockPortfolios[selectedPortfolioId]);
+        if (selectedPortfolioId) {
+            setPortfolio(mockPortfolios[selectedPortfolioId]);
+        } else {
+            setPortfolio(null);
+        }
     }, [selectedPortfolioId]);
 
-    /* 
-    const fetchPortfolio = async () => {
-        try {
-            const res = await axios.get(`${API_URL}/portfolio/1`);
-            setPortfolio(res.data);
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-            setLoading(false);
-        }
-    };
-    */
+    /* ... fetchPortfolio ... */
 
     const handlePortfolioChange = (e) => {
         setSelectedPortfolioId(e.target.value);
     };
 
-    const checkRebalance = async () => {
-        try {
-            const res = await axios.post(`${API_URL}/rebalance/1`);
-            setProposals(res.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    /* ... checkRebalance ... */
 
+    // Loading state is not really used with mock data, but keeping structure
     if (loading) return <div className="p-8 text-gray-600 dark:text-gray-400">Loading Dashboard...</div>;
-    if (!portfolio) return <div className="p-8 text-red-500">Error loading portfolio data.</div>;
 
-    const allocationData = [
+    const performanceData = portfolio?.performanceData || [];
+    const gainLossData = portfolio?.gainLossData || [];
+    const recentActivity = portfolio?.recentActivity || [];
+
+    const allocationData = portfolio ? [
         { name: 'Equity', value: portfolio.EquityValue },
         { name: 'Debt', value: portfolio.DebtValue },
-        { name: 'Mutual Funds', value: portfolio.MutualFundValue || 0 },
-    ];
+        { name: 'Mutual Funds', value: portfolio.MutualFundValue }
+    ] : [];
 
-    const COLORS = ['#C0392B', '#2980B9', '#F1C40F'];
-
-    const performanceData = portfolio.performanceData || [];
-    const gainLossData = portfolio.gainLossData || [];
-    const recentActivity = portfolio.recentActivity || [];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     return (
         <div className="p-4 md:p-8 space-y-8 bg-gray-100 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
@@ -141,12 +126,13 @@ const Dashboard = () => {
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center gap-4 mb-8">
                 <select
                     value={selectedPortfolioId}
                     onChange={handlePortfolioChange}
-                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors min-w-[200px]"
                 >
+                    <option value="" disabled>Select Portfolio</option>
                     <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
                     <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
                     <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
@@ -169,144 +155,157 @@ const Dashboard = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Total Portfolio Value</h3>
-                    <p className="text-4xl font-bold text-gray-800 dark:text-white">
-                        ${portfolio.TotalValue.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Updated just now</p>
+            {!portfolio ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <Activity size={48} className="text-gray-400 mb-4" />
+                    <p className="text-lg text-gray-600 dark:text-gray-300">Please select a portfolio to view details.</p>
                 </div>
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Return</h3>
-                    <p className="text-4xl font-bold text-gray-800 dark:text-white">12%</p>
-                    <div className="flex items-center text-green-600 text-sm mt-2 font-medium">
-                        <TrendingUp size={16} className="mr-1" /> +2.5% this month
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Performance Over Time</h3>
-                    <div className="h-40">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={performanceData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
-                                    tickFormatter={(value) => `${value / 1000}k`}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                    itemStyle={{ color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                    formatter={(value) => [`$${value.toLocaleString()}`, 'Portfolio Value']}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke="#1d4ed8"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorValue)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Asset Allocation</h3>
-                    <div className="h-48">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={allocationData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={0}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    paddingAngle={0}
-                                    dataKey="value"
-                                >
-                                    {allocationData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                    formatter={(value) => `$${value.toLocaleString()}`}
-                                />
-                                <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ color: isDarkMode ? '#9ca3af' : '#9ca3af' }} />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                    {proposals.length > 0 && (
-                        <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-3 rounded-md">
-                            <div className="flex items-center text-yellow-800 dark:text-yellow-500 font-medium mb-2">
-                                <AlertTriangle size={16} className="mr-2" /> Rebalance Recommended
-                            </div>
-                            {proposals.map((p, i) => (
-                                <div key={i} className="text-xs text-gray-600 dark:text-gray-400 flex justify-between">
-                                    <span>{p.Action}</span>
-                                    <span>${p.Amount.toLocaleString()}</span>
-                                </div>
-                            ))}
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {/* Row 1, Col 1: Total Portfolio Value */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200 h-64">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Total Portfolio Value</h3>
+                            <p className="text-4xl font-bold text-gray-800 dark:text-white">
+                                ${portfolio.TotalValue.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Updated just now</p>
                         </div>
-                    )}
-                </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Gain/Loss Summary</h3>
-                    <div className="overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700">
-                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Asset Class</th>
-                                    <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Gain/Loss ($)</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {gainLossData.map((item, idx) => (
-                                    <tr key={idx}>
-                                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 font-medium">{item.class}</td>
-                                        <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200 font-bold">${item.value.toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                        {/* Row 1, Col 2: Return (New Card) */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200 h-64">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Return</h3>
+                            <p className="text-4xl font-bold text-gray-800 dark:text-white">
+                                12%
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Annualized</p>
+                        </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200">
-                    <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Recent Activity</h3>
-                    <div className="space-y-4">
-                        {recentActivity.map((activity, idx) => (
-                            <div key={idx} className="flex flex-col border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0">
-                                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{activity.date}</span>
-                                <span className="text-sm text-gray-800 dark:text-gray-200">{activity.desc}</span>
+                        {/* Row 1, Col 3: Performance Over Time */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200 h-64 flex flex-col">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Performance Over Time</h3>
+                            <div className="flex-1 min-h-0">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={performanceData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
+                                        <XAxis
+                                            dataKey="month"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
+                                            dy={10}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
+                                            tickFormatter={(value) => `${value / 1000}k`}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
+                                            itemStyle={{ color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
+                                            formatter={(value) => [`$${value.toLocaleString()}`, 'Portfolio Value']}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="#1d4ed8"
+                                            strokeWidth={3}
+                                            fillOpacity={1}
+                                            fill="url(#colorValue)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
                             </div>
-                        ))}
+                        </div>
+
+                        {/* Row 2, Col 1: Asset Allocation */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200 h-96 flex flex-col">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Asset Allocation</h3>
+                            <div className="flex-1 min-h-0">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={allocationData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={0}
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            paddingAngle={0}
+                                            dataKey="value"
+                                        >
+                                            {allocationData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
+                                            formatter={(value) => `$${value.toLocaleString()}`}
+                                        />
+                                        <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ color: isDarkMode ? '#9ca3af' : '#9ca3af' }} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            {proposals.length > 0 && (
+                                <div className="mt-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-3 rounded-md">
+                                    <div className="flex items-center text-yellow-800 dark:text-yellow-500 font-medium mb-2">
+                                        <AlertTriangle size={16} className="mr-2" /> Rebalance Recommended
+                                    </div>
+                                    {proposals.map((p, i) => (
+                                        <div key={i} className="text-xs text-gray-600 dark:text-gray-400 flex justify-between">
+                                            <span>{p.Action}</span>
+                                            <span>${p.Amount.toLocaleString()}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Row 2, Col 2: Gain/Loss Summary */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200 h-96">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Gain/Loss Summary</h3>
+                            <div className="overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700">
+                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead className="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Asset Class</th>
+                                            <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Gain/Loss ($)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        {gainLossData.map((item, idx) => (
+                                            <tr key={idx}>
+                                                <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 font-medium">{item.class}</td>
+                                                <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200 font-bold">${item.value.toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Row 2, Col 3: Recent Activity */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-colors duration-200 h-96 overflow-y-auto">
+                            <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-4">Recent Activity</h3>
+                            <div className="space-y-4">
+                                {recentActivity.map((activity, idx) => (
+                                    <div key={idx} className="flex flex-col border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0">
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{activity.date}</span>
+                                        <span className="text-sm text-gray-800 dark:text-gray-200">{activity.desc}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </>
+            )}
         </div>
     );
 };

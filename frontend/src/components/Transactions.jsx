@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Calendar, ChevronDown, ChevronUp, Upload } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { useTransaction } from '../context/TransactionContext';
+import { useNavigate } from 'react-router-dom';
 
 const Transactions = () => {
     // Mock Data for Portfolios
@@ -30,11 +33,15 @@ const Transactions = () => {
         }
     });
 
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
+    const { setUploadedTransactions } = useTransaction();
+    const fileInputRef = useRef(null);
+    const navigate = useNavigate();
 
     const transactions = mockPortfolios[selectedPortfolioId]?.transactions || [];
 
     const [formData, setFormData] = useState({
+        securityType: '',
         type: 'Buy',
         date: '',
         quantity: '',
@@ -58,6 +65,7 @@ const Transactions = () => {
             id: transactions.length + 1,
             date: formData.date,
             type: formData.type,
+            securityType: formData.securityType,
             quantity: Number(formData.quantity),
             price: Number(formData.price),
             amount: Number(formData.quantity) * Number(formData.price)
@@ -71,7 +79,29 @@ const Transactions = () => {
             }
         }));
 
-        setFormData({ type: 'Buy', date: '', quantity: '', price: '' });
+        setFormData({ securityType: '', type: 'Buy', date: '', quantity: '', price: '' });
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+            const data = XLSX.utils.sheet_to_json(ws);
+            setUploadedTransactions(data);
+            alert("File uploaded successfully! Check Transaction Details.");
+            // Optional: navigate('/transaction-details');
+        };
+        reader.readAsBinaryString(file);
+    };
+
+    const triggerFileUpload = () => {
+        fileInputRef.current.click();
     };
 
     const requestSort = (key) => {
@@ -107,126 +137,167 @@ const Transactions = () => {
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transactions</h1>
 
-            {/* Add Transaction Form */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Add Transaction</h2>
-                    <select
-                        value={selectedPortfolioId}
-                        onChange={handlePortfolioChange}
-                        className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors"
+            <div className="flex items-center justify-between mb-6">
+                <select
+                    value={selectedPortfolioId}
+                    onChange={handlePortfolioChange}
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors min-w-[200px]"
+                >
+                    <option value="" disabled>Select Portfolio</option>
+                    <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                    <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                    <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                </select>
+
+                <div>
+                    <input
+                        type="file"
+                        accept=".csv, .xlsx"
+                        onChange={handleFileUpload}
+                        ref={fileInputRef}
+                        className="hidden"
+                    />
+                    <button
+                        onClick={triggerFileUpload}
+                        className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
                     >
-                        <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
-                        <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
-                        <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
-                    </select>
+                        <Upload size={16} />
+                        Upload Transaction File
+                    </button>
                 </div>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <select
-                            name="type"
-                            value={formData.type}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                            <option value="Buy">Buy</option>
-                            <option value="Sell">Sell</option>
-                        </select>
-                    </div>
-                    <div className="relative">
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            placeholder="mm/dd/yyyy"
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="number"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            placeholder="Quantity"
-                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="number"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleInputChange}
-                            placeholder="Price"
-                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        />
-                    </div>
-                    <div>
-                        <button
-                            type="submit"
-                            className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
-                        >
-                            Submit
-                        </button>
-                    </div>
-                </form>
             </div>
 
-            {/* Transaction History Table */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Transaction History</h2>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    onClick={() => requestSort('date')}
-                                >
-                                    Date <SortIcon columnKey="date" />
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    onClick={() => requestSort('type')}
-                                >
-                                    Type <SortIcon columnKey="type" />
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    onClick={() => requestSort('quantity')}
-                                >
-                                    Quantity <SortIcon columnKey="quantity" />
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    onClick={() => requestSort('price')}
-                                >
-                                    Price <SortIcon columnKey="price" />
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    onClick={() => requestSort('amount')}
-                                >
-                                    Amount <SortIcon columnKey="amount" />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {sortedTransactions.map((transaction) => (
-                                <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.date}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.type}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.quantity}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.price}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.amount.toLocaleString()}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {!selectedPortfolioId ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <p className="text-lg text-gray-600 dark:text-gray-300">Please select a portfolio to view transactions.</p>
                 </div>
-            </div>
+            ) : (
+                <>
+                    {/* Add Transaction Form */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Add Transaction</h2>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <select
+                                    name="securityType"
+                                    value={formData.securityType}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                >
+                                    <option value="" disabled>Select Security</option>
+                                    <option value="EQ">EQ</option>
+                                    <option value="FI">FI</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                >
+                                    <option value="Buy">Buy</option>
+                                    <option value="Sell">Sell</option>
+                                </select>
+                            </div>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    placeholder="mm/dd/yyyy"
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    value={formData.quantity}
+                                    onChange={handleInputChange}
+                                    placeholder="Quantity"
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleInputChange}
+                                    placeholder="Price"
+                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+                            <div>
+                                <button
+                                    type="submit"
+                                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* Transaction History Table */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Transaction History</h2>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th
+                                            className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => requestSort('date')}
+                                        >
+                                            Date <SortIcon columnKey="date" />
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => requestSort('type')}
+                                        >
+                                            Type <SortIcon columnKey="type" />
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => requestSort('quantity')}
+                                        >
+                                            Quantity <SortIcon columnKey="quantity" />
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => requestSort('price')}
+                                        >
+                                            Price <SortIcon columnKey="price" />
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => requestSort('amount')}
+                                        >
+                                            Amount <SortIcon columnKey="amount" />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    {sortedTransactions.map((transaction) => (
+                                        <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.date}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.type}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.quantity}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.price}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.amount.toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

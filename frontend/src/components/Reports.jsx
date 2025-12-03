@@ -7,7 +7,7 @@ const Reports = () => {
     const { theme } = useTheme();
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    const [selectedPortfolioId, setSelectedPortfolioId] = React.useState('Portfolio-NIBLEQ777731');
+    const [selectedPortfolioId, setSelectedPortfolioId] = React.useState('');
 
     // Mock Data for Portfolios
     const mockPortfolios = {
@@ -65,129 +65,138 @@ const Reports = () => {
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Reports</h1>
-                <select
-                    value={selectedPortfolioId}
-                    onChange={handlePortfolioChange}
-                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
-                >
-                    <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
-                    <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
-                    <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
-                </select>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Performance Report */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Performance Report</h2>
-
-                    <div className="overflow-x-auto mb-6">
-                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th className="px-4 py-2">Metric</th>
-                                    <th className="px-4 py-2">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">ROI</td>
-                                    <td className="px-4 py-2">{performanceMetrics.ROI}</td>
-                                </tr>
-                                <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">CAGR</td>
-                                    <td className="px-4 py-2">{performanceMetrics.CAGR}</td>
-                                </tr>
-                                <tr className="bg-white dark:bg-gray-800">
-                                    <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">XIRR</td>
-                                    <td className="px-4 py-2">{performanceMetrics.XIRR}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="h-48 bg-gray-50 dark:bg-gray-900 rounded flex items-center justify-center border border-gray-100 dark:border-gray-700">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={performanceData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
-                                <XAxis dataKey="name" hide />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                    cursor={{ fill: isDarkMode ? '#374151' : '#f3f4f6' }}
-                                />
-                                <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                    <div className="text-center text-xs text-gray-400 mt-2">Performance Chart Placeholder</div>
-                </div>
-
-                {/* Risk Analysis */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Risk Analysis</h2>
-
-                    <div className="overflow-x-auto mb-6">
-                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th className="px-4 py-2">Metric</th>
-                                    <th className="px-4 py-2">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">VaR</td>
-                                    <td className="px-4 py-2">{riskMetrics.VaR}</td>
-                                </tr>
-                                <tr className="bg-white dark:bg-gray-800">
-                                    <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">Sharpe Ratio</td>
-                                    <td className="px-4 py-2">{riskMetrics.SharpeRatio}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="h-48 bg-gray-50 dark:bg-gray-900 rounded flex items-center justify-center border border-gray-100 dark:border-gray-700">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={riskData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={40}
-                                    outerRadius={60}
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {riskData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                    <div className="text-center text-xs text-gray-400 mt-2">Risk Chart Placeholder</div>
-                </div>
-
-                {/* Download Options */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Download Options</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Select format to download report:</p>
-
-                    <div className="space-y-4">
-                        <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
-                            <FileText size={18} className="mr-2" /> Download PDF
-                        </button>
-                        <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
-                            <FileSpreadsheet size={18} className="mr-2" /> Download Excel
-                        </button>
-                    </div>
+                <div className="flex items-center gap-2">
+                    <select
+                        value={selectedPortfolioId}
+                        onChange={handlePortfolioChange}
+                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none transition-colors min-w-[200px]"
+                    >
+                        <option value="" disabled>Select Portfolio</option>
+                        <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                        <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                        <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                    </select>
                 </div>
             </div>
+
+            {!selectedPortfolioId ? (
+                <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <p className="text-lg text-gray-600 dark:text-gray-300">Please select a portfolio to view reports.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Performance Report */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Performance Report</h2>
+
+                        <div className="overflow-x-auto mb-6">
+                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th className="px-4 py-2">Metric</th>
+                                        <th className="px-4 py-2">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+                                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">ROI</td>
+                                        <td className="px-4 py-2">{performanceMetrics.ROI}</td>
+                                    </tr>
+                                    <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+                                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">CAGR</td>
+                                        <td className="px-4 py-2">{performanceMetrics.CAGR}</td>
+                                    </tr>
+                                    <tr className="bg-white dark:bg-gray-800">
+                                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">XIRR</td>
+                                        <td className="px-4 py-2">{performanceMetrics.XIRR}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="h-48 bg-gray-50 dark:bg-gray-900 rounded flex items-center justify-center border border-gray-100 dark:border-gray-700">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={performanceData}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
+                                    <XAxis dataKey="name" hide />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
+                                        cursor={{ fill: isDarkMode ? '#374151' : '#f3f4f6' }}
+                                    />
+                                    <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="text-center text-xs text-gray-400 mt-2">Performance Chart Placeholder</div>
+                    </div>
+
+                    {/* Risk Analysis */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Risk Analysis</h2>
+
+                        <div className="overflow-x-auto mb-6">
+                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th className="px-4 py-2">Metric</th>
+                                        <th className="px-4 py-2">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+                                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">VaR</td>
+                                        <td className="px-4 py-2">{riskMetrics.VaR}</td>
+                                    </tr>
+                                    <tr className="bg-white dark:bg-gray-800">
+                                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-gray-200">Sharpe Ratio</td>
+                                        <td className="px-4 py-2">{riskMetrics.SharpeRatio}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="h-48 bg-gray-50 dark:bg-gray-900 rounded flex items-center justify-center border border-gray-100 dark:border-gray-700">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={riskData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={40}
+                                        outerRadius={60}
+                                        fill="#8884d8"
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {riskData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="text-center text-xs text-gray-400 mt-2">Risk Chart Placeholder</div>
+                    </div>
+
+                    {/* Download Options */}
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Download Options</h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Select format to download report:</p>
+
+                        <div className="space-y-4">
+                            <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
+                                <FileText size={18} className="mr-2" /> Download PDF
+                            </button>
+                            <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
+                                <FileSpreadsheet size={18} className="mr-2" /> Download Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

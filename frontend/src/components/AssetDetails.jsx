@@ -5,7 +5,8 @@ import { useTheme } from '../context/ThemeContext';
 
 const AssetDetails = () => {
     const [activeTab, setActiveTab] = useState('Overview');
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState('Portfolio-NIBLEQ777731');
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
+    const [selectedSecurity, setSelectedSecurity] = useState('');
     const { theme } = useTheme();
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
@@ -66,13 +67,38 @@ const AssetDetails = () => {
         <div className="p-4 md:p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             {/* Header */}
             <div className="bg-gray-900 dark:bg-gray-800 text-white p-6 rounded-t-lg shadow-sm flex flex-col md:flex-row md:items-center md:space-x-8 space-y-4 md:space-y-0 transition-colors duration-200">
+                {/* Portfolio Selection (Moved here) */}
                 <div>
-                    <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Asset Name:</span>
-                    <span className="ml-2 text-xl font-bold">Stock A</span>
+
+                    <select
+                        value={selectedPortfolioId}
+                        onChange={handlePortfolioChange}
+                        className="bg-gray-800 dark:bg-gray-700 text-white px-3 py-1 rounded-md border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors w-full md:w-auto"
+                    >
+                        <option value="" disabled>Select Portfolio</option>
+                        <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
+                        <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
+                        <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
+                    </select>
+                </div>
+
+                {/* Security Selection (Renamed and converted to dropdown) */}
+                <div>
+                    <select
+                        value={selectedSecurity}
+                        onChange={(e) => setSelectedSecurity(e.target.value)}
+                        className="bg-gray-800 dark:bg-gray-700 text-white px-3 py-1 rounded-md border border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors w-full md:w-auto font-bold"
+                    >
+                        <option value="" disabled>Select Security</option>
+                        <option value="ACC Cement">ACC Cement</option>
+                        <option value="IDFC Bond">IDFC Bond</option>
+                    </select>
                 </div>
                 <div>
                     <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Ticker:</span>
-                    <span className="ml-2 text-xl font-bold">A</span>
+                    <span className="ml-2 text-xl font-bold">
+                        {selectedSecurity === 'ACC Cement' ? 'ACC' : selectedSecurity === 'IDFC Bond' ? 'IDFC' : '-'}
+                    </span>
                 </div>
                 <div>
                     <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Current Price:</span>
@@ -102,55 +128,50 @@ const AssetDetails = () => {
             <div className="bg-white dark:bg-gray-800 p-4 md:p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 min-h-[400px] transition-colors duration-200">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-lg font-bold text-gray-800 dark:text-white">{activeTab}</h2>
-                    {activeTab === 'Overview' && (
-                        <select
-                            value={selectedPortfolioId}
-                            onChange={handlePortfolioChange}
-                            className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-colors"
-                        >
-                            <option value="Portfolio-NIBLEQ777731">Portfolio-NIBLEQ777731</option>
-                            <option value="Portfolio-NIBLFI888842">Portfolio-NIBLFI888842</option>
-                            <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
-                        </select>
-                    )}
                 </div>
 
                 {activeTab === 'Overview' && (
-                    <div className="h-80 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                        {/* Chart Placeholder */}
-                        <div className="w-full h-full p-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={priceHistory}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
-                                    <XAxis
-                                        dataKey="date"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
-                                        dy={10}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#1f2937', borderColor: isDarkMode ? '#374151' : '#374151', color: '#f3f4f6' }}
-                                        itemStyle={{ color: '#f3f4f6' }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="price"
-                                        stroke={isDarkMode ? "#60A5FA" : "#111827"}
-                                        strokeWidth={3}
-                                        dot={{ r: 4, fill: isDarkMode ? "#60A5FA" : "#111827" }}
-                                        activeDot={{ r: 6 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                            <div className="text-center text-gray-400 text-sm mt-2">Price History Chart Placeholder</div>
+                    !currentPortfolio ? (
+                        <div className="flex flex-col items-center justify-center h-80 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <p className="text-gray-500 dark:text-gray-400">Please select a portfolio to view details.</p>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="h-80 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                            {/* Chart Placeholder */}
+                            <div className="w-full h-full p-4">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={priceHistory}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#e5e7eb"} />
+                                        <XAxis
+                                            dataKey="date"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
+                                            dy={10}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: isDarkMode ? '#9ca3af' : '#6b7280', fontSize: 12 }}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#1f2937', borderColor: isDarkMode ? '#374151' : '#374151', color: '#f3f4f6' }}
+                                            itemStyle={{ color: '#f3f4f6' }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="price"
+                                            stroke={isDarkMode ? "#60A5FA" : "#111827"}
+                                            strokeWidth={3}
+                                            dot={{ r: 4, fill: isDarkMode ? "#60A5FA" : "#111827" }}
+                                            activeDot={{ r: 6 }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                                <div className="text-center text-gray-400 text-sm mt-2">Price History Chart Placeholder</div>
+                            </div>
+                        </div>
+                    )
                 )}
 
                 {activeTab === 'Transactions' && (
