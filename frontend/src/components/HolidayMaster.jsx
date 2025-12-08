@@ -309,116 +309,118 @@ const HolidayMaster = () => {
 
             {/* Modal Form */}
             {isFormOpen && ReactDOM.createPortal(
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                {editingId ? 'Edit Date Details' : 'Add New Date'}
-                            </h3>
-                            <button onClick={resetForm}><X size={24} className="text-gray-500 hover:text-gray-700" /></button>
+                <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/50 backdrop-blur-sm">
+                    <div className="flex min-h-full items-center justify-center p-4">
+                        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95 duration-200 my-8">
+                            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                    {editingId ? 'Edit Date Details' : 'Add New Date'}
+                                </h3>
+                                <button onClick={resetForm}><X size={24} className="text-gray-500 hover:text-gray-700" /></button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+                                {/* Row 1: Primary Date Input */}
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-sm font-bold text-gray-900 dark:text-white">Calendar Date <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="date"
+                                        name="calendarDate"
+                                        value={formData.calendarDate}
+                                        onChange={handleDateChange}
+                                        required
+                                        className="w-full px-4 py-2 rounded-lg border border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {/* Auto-Calculated Fields (Read-Only) */}
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Day of Week</label>
+                                    <input type="text" value={formData.dayOfWeek} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Wk # (ISO)</label>
+                                    <input type="text" value={formData.weekNumber} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Quarter</label>
+                                    <input type="text" value={formData.quarter} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+
+                                {/* Row 2: More Auto-calc */}
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Month</label>
+                                    <input type="text" value={formData.month} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Year</label>
+                                    <input type="text" value={formData.year} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Is Weekend?</label>
+                                    <input type="text" value={formData.isWeekend ? 'Yes' : 'No'} readOnly className={`w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 font-bold cursor-not-allowed ${formData.isWeekend ? 'text-red-500' : 'text-green-600'}`} />
+                                </div>
+                                <div className="md:col-span-1 space-y-2">
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">Day #</label>
+                                    <input type="text" value={formData.dayNumberOfWeek} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
+                                </div>
+
+
+                                {/* Row 3: Toggles & Description */}
+                                <div className="md:col-span-4 border-t border-gray-100 dark:border-gray-700 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                    {/* Is Holiday Toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                                        <div>
+                                            <div className="font-bold text-gray-900 dark:text-white">Is Holiday?</div>
+                                            <div className="text-xs text-gray-500">Enable if this date is a public holiday</div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked={formData.isHoliday} onChange={handleHolidayToggle} className="sr-only peer" />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {/* Is Trading Day Toggle */}
+                                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                                        <div>
+                                            <div className="font-bold text-gray-900 dark:text-white">Is Trading Day?</div>
+                                            <div className="text-xs text-gray-500">Exchange open for trading</div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" checked={formData.isTradingDay} onChange={handleTradingDayToggle} className="sr-only peer" />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {/* Holiday Description (Conditional) */}
+                                    {formData.isHoliday && (
+                                        <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Holiday Description <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                name="holidayDescription"
+                                                value={formData.holidayDescription}
+                                                onChange={handleInputChange}
+                                                maxLength={50}
+                                                placeholder="e.g. Christmas Day"
+                                                className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                            />
+                                            <div className="text-xs text-right text-gray-400 mt-1">{formData.holidayDescription.length}/50</div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Actions */}
+                                <div className="md:col-span-4 pt-4 flex gap-3 border-t border-gray-100 dark:border-gray-700">
+                                    <button type="button" onClick={resetForm} className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Cancel</button>
+                                    <button type="submit" className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]">
+                                        {editingId ? 'Update Date' : 'Save Date'}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
-
-                            {/* Row 1: Primary Date Input */}
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-sm font-bold text-gray-900 dark:text-white">Calendar Date <span className="text-red-500">*</span></label>
-                                <input
-                                    type="date"
-                                    name="calendarDate"
-                                    value={formData.calendarDate}
-                                    onChange={handleDateChange}
-                                    required
-                                    className="w-full px-4 py-2 rounded-lg border border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-
-                            {/* Auto-Calculated Fields (Read-Only) */}
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Day of Week</label>
-                                <input type="text" value={formData.dayOfWeek} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Wk # (ISO)</label>
-                                <input type="text" value={formData.weekNumber} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Quarter</label>
-                                <input type="text" value={formData.quarter} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-
-                            {/* Row 2: More Auto-calc */}
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Month</label>
-                                <input type="text" value={formData.month} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Year</label>
-                                <input type="text" value={formData.year} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Is Weekend?</label>
-                                <input type="text" value={formData.isWeekend ? 'Yes' : 'No'} readOnly className={`w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 font-bold cursor-not-allowed ${formData.isWeekend ? 'text-red-500' : 'text-green-600'}`} />
-                            </div>
-                            <div className="md:col-span-1 space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase">Day #</label>
-                                <input type="text" value={formData.dayNumberOfWeek} readOnly className="w-full px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed" />
-                            </div>
-
-
-                            {/* Row 3: Toggles & Description */}
-                            <div className="md:col-span-4 border-t border-gray-100 dark:border-gray-700 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                                {/* Is Holiday Toggle */}
-                                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-                                    <div>
-                                        <div className="font-bold text-gray-900 dark:text-white">Is Holiday?</div>
-                                        <div className="text-xs text-gray-500">Enable if this date is a public holiday</div>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={formData.isHoliday} onChange={handleHolidayToggle} className="sr-only peer" />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                                    </label>
-                                </div>
-
-                                {/* Is Trading Day Toggle */}
-                                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-                                    <div>
-                                        <div className="font-bold text-gray-900 dark:text-white">Is Trading Day?</div>
-                                        <div className="text-xs text-gray-500">Exchange open for trading</div>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={formData.isTradingDay} onChange={handleTradingDayToggle} className="sr-only peer" />
-                                        <div className="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                    </label>
-                                </div>
-
-                                {/* Holiday Description (Conditional) */}
-                                {formData.isHoliday && (
-                                    <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Holiday Description <span className="text-red-500">*</span></label>
-                                        <input
-                                            type="text"
-                                            name="holidayDescription"
-                                            value={formData.holidayDescription}
-                                            onChange={handleInputChange}
-                                            maxLength={50}
-                                            placeholder="e.g. Christmas Day"
-                                            className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <div className="text-xs text-right text-gray-400 mt-1">{formData.holidayDescription.length}/50</div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Actions */}
-                            <div className="md:col-span-4 pt-4 flex gap-3 border-t border-gray-100 dark:border-gray-700">
-                                <button type="button" onClick={resetForm} className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors">Cancel</button>
-                                <button type="submit" className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]">
-                                    {editingId ? 'Update Date' : 'Save Date'}
-                                </button>
-                            </div>
-                        </form>
                     </div>
                 </div>,
                 document.body

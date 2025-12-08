@@ -242,127 +242,129 @@ const CurrencyMaster = () => {
 
             {/* Modal Form */}
             {isFormOpen && ReactDOM.createPortal(
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                {editingId ? 'Edit Currency' : 'Add New Currency'}
-                            </h3>
-                            <button onClick={resetForm} className="text-gray-500 hover:text-gray-700 dark:hover:text-white transition-colors">
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            {/* Currency Code */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Currency Code <span className="text-red-500">*</span></label>
-                                <select
-                                    name="code"
-                                    value={formData.code}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                >
-                                    <option value="">Select Code</option>
-                                    {currencyCodes.map(code => <option key={code} value={code}>{code}</option>)}
-                                </select>
+                <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/50 backdrop-blur-sm">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95 duration-200 my-8 text-left">
+                            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                    {editingId ? 'Edit Currency' : 'Add New Currency'}
+                                </h3>
+                                <button onClick={resetForm} className="text-gray-500 hover:text-gray-700 dark:hover:text-white transition-colors">
+                                    <X size={24} />
+                                </button>
                             </div>
 
-                            {/* Currency Name */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Currency Name <span className="text-red-500">*</span></label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="e.g. US Dollar"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
+                            <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            {/* Symbol */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Symbol <span className="text-red-500">*</span></label>
-                                <input
-                                    type="text"
-                                    name="symbol"
-                                    value={formData.symbol}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="e.g. $"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-
-                            {/* Country */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Country <span className="text-red-500">*</span></label>
-                                <select
-                                    name="country"
-                                    value={formData.country}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                >
-                                    <option value="">Select Country</option>
-                                    {countries.map(country => <option key={country} value={country}>{country}</option>)}
-                                </select>
-                            </div>
-
-                            {/* Decimal Places */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Decimal Places</label>
-                                <input
-                                    type="number"
-                                    name="decimalPlaces"
-                                    value={formData.decimalPlaces}
-                                    onChange={handleInputChange}
-                                    min="0"
-                                    max="4"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
-
-                            {/* Is Active Toggle */}
-                            <div className="flex items-center justify-between md:col-span-2 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                                <span className="flex flex-col">
-                                    <span className="text-sm font-medium text-gray-900 dark:text-white">Active Status</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">Enable or disable this currency</span>
-                                </span>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        name="isActive"
-                                        checked={formData.isActive}
+                                {/* Currency Code */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Currency Code <span className="text-red-500">*</span></label>
+                                    <select
+                                        name="code"
+                                        value={formData.code}
                                         onChange={handleInputChange}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                </label>
-                            </div>
+                                        required
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    >
+                                        <option value="">Select Code</option>
+                                        {currencyCodes.map(code => <option key={code} value={code}>{code}</option>)}
+                                    </select>
+                                </div>
 
-                            {/* Form Actions */}
-                            <div className="md:col-span-2 pt-4 flex gap-3 border-t border-gray-100 dark:border-gray-700 mt-2">
-                                <button
-                                    type="button"
-                                    onClick={resetForm}
-                                    className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-medium rounded-lg transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
-                                >
-                                    <Save size={18} />
-                                    {editingId ? 'Update Currency' : 'Save Currency'}
-                                </button>
-                            </div>
-                        </form>
+                                {/* Currency Name */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Currency Name <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        required
+                                        placeholder="e.g. US Dollar"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {/* Symbol */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Symbol <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="symbol"
+                                        value={formData.symbol}
+                                        onChange={handleInputChange}
+                                        required
+                                        placeholder="e.g. $"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {/* Country */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Country <span className="text-red-500">*</span></label>
+                                    <select
+                                        name="country"
+                                        value={formData.country}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    >
+                                        <option value="">Select Country</option>
+                                        {countries.map(country => <option key={country} value={country}>{country}</option>)}
+                                    </select>
+                                </div>
+
+                                {/* Decimal Places */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Decimal Places</label>
+                                    <input
+                                        type="number"
+                                        name="decimalPlaces"
+                                        value={formData.decimalPlaces}
+                                        onChange={handleInputChange}
+                                        min="0"
+                                        max="4"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {/* Is Active Toggle */}
+                                <div className="flex items-center justify-between md:col-span-2 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <span className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-900 dark:text-white">Active Status</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">Enable or disable this currency</span>
+                                    </span>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            name="isActive"
+                                            checked={formData.isActive}
+                                            onChange={handleInputChange}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+
+                                {/* Form Actions */}
+                                <div className="md:col-span-2 pt-4 flex gap-3 border-t border-gray-100 dark:border-gray-700 mt-2">
+                                    <button
+                                        type="button"
+                                        onClick={resetForm}
+                                        className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-medium rounded-lg transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+                                    >
+                                        <Save size={18} />
+                                        {editingId ? 'Update Currency' : 'Save Currency'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>,
                 document.body

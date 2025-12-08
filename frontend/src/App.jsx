@@ -20,6 +20,7 @@ import BondMaster from './components/BondMaster';
 import CorporateAction from './components/CorporateAction';
 import CurrencyMaster from './components/CurrencyMaster';
 import HolidayMaster from './components/HolidayMaster';
+import BrokerMaster from './components/BrokerMaster';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -67,6 +68,7 @@ const MainLayout = () => {
                         <Route path="/corporate-action/non-voluntary" element={<CorporateAction />} />
                         <Route path="/master/currency" element={<CurrencyMaster />} />
                         <Route path="/master/holiday" element={<HolidayMaster />} />
+                        <Route path="/master/broker" element={<BrokerMaster />} />
                         <Route path="/reports" element={<Reports />} />
                         <Route path="/rebalancing" element={<PortfolioRebalancing />} />
                         <Route path="/manual-rebalancing" element={<ManualRebalancing />} />
