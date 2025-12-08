@@ -10,6 +10,7 @@ export default {
       colors: {
         'nimb-blue': '#003366', // Example NIMB color
         'nimb-gold': '#D4AF37',
+        'blue-450': '#5292ff', // Custom shade between 400 and 500
       }
     },
   },

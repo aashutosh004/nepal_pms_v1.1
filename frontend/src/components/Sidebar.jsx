@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, PieChart, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, PieChart, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
@@ -25,14 +25,28 @@ const Sidebar = ({ isOpen, onClose }) => {
             ]
         },
         {
+            name: 'Master',
+            icon: Database,
+            path: '/master',
+            roles: ['Investment Manager'],
+            subItems: [
+                { name: 'Security Master', icon: FileText, path: '/master/security' },
+                { name: 'Broker Master', icon: FileText, path: '/master/broker' },
+                { name: 'Holiday Master', icon: FileText, path: '/master/holiday' },
+                { name: 'Currency Master', icon: FileText, path: '/master/currency' },
+                { name: 'Validation Master', icon: FileText, path: '/master/validation' },
+                { name: 'User Profile Master', icon: User, path: '/master/user-profile' },
+                { name: 'Equity Master', icon: FileText, path: '/asset-details/equity' },
+                { name: 'Bond Master', icon: FileText, path: '/asset-details/bond' }
+            ]
+        },
+        {
             name: 'Asset Details',
             icon: FileText,
             path: '/asset-details',
             roles: ['Investment Manager'],
             subItems: [
-                { name: 'Overview', icon: FileText, path: '/asset-details' },
-                { name: 'Equity Master', icon: FileText, path: '/asset-details/equity' },
-                { name: 'Bond Master', icon: FileText, path: '/asset-details/bond' }
+                { name: 'Overview', icon: FileText, path: '/asset-details' }
             ]
         },
         {
@@ -81,13 +95,15 @@ const Sidebar = ({ isOpen, onClose }) => {
 
             {/* Sidebar */}
             <div className={`
-                fixed left-0 top-0 h-screen bg-gray-900 text-white flex flex-col z-30
+                fixed left-0 top-0 h-screen bg-[#003366] text-white flex flex-col z-30
                 transition-transform duration-300 ease-in-out w-64
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:translate-x-0
             `}>
-                <div className="p-6 border-b border-gray-700 flex justify-between items-center">
-                    <img src={logo} alt="NIMB PMS" className="h-12 w-auto" />
+                <div className="p-6 border-b border-blue-800 flex justify-between items-center">
+                    <div className="bg-white/90 p-2 rounded-lg shadow-lg shadow-blue-900/50 backdrop-blur-sm">
+                        <img src={logo} alt="NIMB PMS" className="h-16 w-auto" />
+                    </div>
                     {/* Close button for mobile */}
                     <button
                         onClick={onClose}
@@ -108,7 +124,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         return (
                             <div key={item.name}>
                                 <div
-                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer ${isActive ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+                                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 hover:scale-[1.02] ${isActive ? 'bg-blue-600 text-white shadow-md shadow-black/20 font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white'}`}
                                 >
                                     <Link
                                         to={item.path}
@@ -122,7 +138,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     </Link>
                                     {hasSubItems && (
                                         <div
-                                            className="p-1 hover:bg-gray-700 rounded"
+                                            className="p-1 hover:bg-blue-700 rounded text-gray-300"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -135,12 +151,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 </div>
 
                                 {hasSubItems && isExpanded && (
-                                    <div className="ml-8 mt-1 space-y-1 border-l-2 border-gray-700 pl-2">
+                                    <div className="ml-8 mt-1 space-y-1 border-l-2 border-blue-800 pl-2">
                                         {item.subItems.map((sub) => (
                                             <Link
                                                 key={sub.name}
                                                 to={sub.path}
-                                                className={`flex items-center space-x-3 p-2 rounded-lg text-sm transition-colors ${location.pathname === sub.path ? 'text-blue-400 font-medium' : 'text-gray-500 hover:text-gray-300'}`}
+                                                className={`flex items-center space-x-3 p-2 rounded-lg text-sm transition-all duration-300 ease-out hover:translate-x-2 ${location.pathname === sub.path ? 'text-white font-bold bg-blue-600' : 'text-gray-400 hover:text-white hover:bg-blue-800/50'}`}
                                                 onClick={() => {
                                                     if (window.innerWidth < 768) onClose();
                                                 }}
@@ -155,19 +171,20 @@ const Sidebar = ({ isOpen, onClose }) => {
                         );
                     })}
                 </nav>
-                <div className="p-4 border-t border-gray-700">
+                <div className="p-4 border-t border-blue-800">
                     <div className="flex flex-col gap-4">
                         <div>
                             <div className="text-sm text-gray-400">Logged in as</div>
-                            <div className="font-semibold text-sm">{getDisplayName()}</div>
+                            <div className="font-semibold text-sm text-white">{getDisplayName()}</div>
                         </div>
                         <button
                             onClick={logout}
-                            className="group flex items-center justify-center gap-3 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-900/20 to-red-800/20 border border-red-900/50 text-red-400 hover:from-red-600 hover:to-red-700 hover:text-white hover:border-red-500 transition-all duration-300 shadow-lg hover:shadow-red-900/20"
+                            className="group relative flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-red-400 shadow-sm hover:shadow-lg hover:shadow-red-500/20 hover:bg-gradient-to-r hover:from-red-900/80 hover:to-red-800/80 hover:text-white hover:border-transparent transition-all duration-300 ease-out overflow-hidden"
                             title="Logout"
                         >
-                            <LogOut size={18} className="group-hover:-translate-x-1 transition-transform duration-300" />
-                            <span className="font-medium text-sm tracking-wide">Logout</span>
+                            <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                            <LogOut size={18} className="relative z-10 group-hover:-translate-x-1 transition-transform duration-300" />
+                            <span className="relative z-10 font-semibold text-sm tracking-wide">Logout</span>
                         </button>
                     </div>
                 </div>

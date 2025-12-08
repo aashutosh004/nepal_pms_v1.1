@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { AlertTriangle, CheckCircle, RefreshCw, TrendingUp, DollarSign, Activity } from 'lucide-react';
+import { AlertTriangle, CheckCircle, RefreshCw, TrendingUp, DollarSign, Activity, X, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import API_URL from '../config';
@@ -83,7 +84,11 @@ const Dashboard = () => {
     const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
     const [portfolio, setPortfolio] = useState(null);
     const [proposals, setProposals] = useState([]);
+
     const [loading, setLoading] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportDateRange, setReportDateRange] = useState({ from: '', to: '' });
+    const [generatedReport, setGeneratedReport] = useState(null);
     const navigate = useNavigate();
     const { theme } = useTheme();
 
@@ -144,7 +149,10 @@ const Dashboard = () => {
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
                     Withdraw Funds
                 </button>
-                <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
+                <button
+                    onClick={() => setShowReportModal(true)}
+                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
+                >
                     Generate Report
                 </button>
                 <button
@@ -305,6 +313,127 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </>
+            )}
+
+            {/* Report Generation Modal */}
+            {showReportModal && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Generate Report</h3>
+                            <button
+                                onClick={() => {
+                                    setShowReportModal(false);
+                                    setGeneratedReport(null);
+                                    setReportDateRange({ from: '', to: '' });
+                                }}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            {!generatedReport ? (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">From Date</label>
+                                            <input
+                                                type="date"
+                                                value={reportDateRange.from}
+                                                onChange={(e) => setReportDateRange({ ...reportDateRange, from: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">To Date</label>
+                                            <input
+                                                type="date"
+                                                value={reportDateRange.to}
+                                                onChange={(e) => setReportDateRange({ ...reportDateRange, to: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => {
+                                            if (reportDateRange.from && reportDateRange.to) {
+                                                if (new Date(reportDateRange.from) > new Date(reportDateRange.to)) {
+                                                    alert("Invalid Date Range: 'From Date' cannot be after 'To Date'. Please select a correct range.");
+                                                    return;
+                                                }
+                                                // Simulate Report Generation logic
+                                                setGeneratedReport({
+                                                    dateRange: `${reportDateRange.from} to ${reportDateRange.to}`,
+                                                    data: [
+                                                        { id: 1, type: 'Equity', return: '12.5%', value: '$45,000' },
+                                                        { id: 2, type: 'Debt', return: '8.2%', value: '$30,000' },
+                                                        { id: 3, type: 'Mutual Funds', return: '15.1%', value: '$25,000' }
+                                                    ],
+                                                    totalValue: '$100,000'
+                                                });
+                                            } else {
+                                                alert("Please select both dates");
+                                            }
+                                        }}
+                                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                    >
+                                        Generate Report
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="text-center space-y-2">
+                                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-2">
+                                            <CheckCircle size={24} />
+                                        </div>
+                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">Report Generated Successfully</h4>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            Period: {generatedReport.dateRange}
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+                                        <div className="space-y-3">
+                                            {generatedReport.data.map((item) => (
+                                                <div key={item.id} className="flex justify-between items-center p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                                    <span className="font-medium text-gray-700 dark:text-gray-300">{item.type}</span>
+                                                    <div className="text-right">
+                                                        <div className="font-bold text-gray-900 dark:text-white">{item.value}</div>
+                                                        <div className="text-xs text-green-600 dark:text-green-400">+{item.return}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3 flex justify-between items-center">
+                                                <span className="font-bold text-gray-900 dark:text-white">Total Value</span>
+                                                <span className="font-bold text-blue-600 dark:text-blue-400 text-lg">{generatedReport.totalValue}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setGeneratedReport(null)}
+                                            className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md shadow-blue-500/20 transition-colors flex items-center justify-center gap-2"
+                                            onClick={() => setShowReportModal(false)}
+                                        >
+                                            <div className="text-white"><FileText size={18} /></div>
+                                            Download PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );

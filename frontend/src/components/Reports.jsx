@@ -1,5 +1,6 @@
-import React from 'react';
-import { Download, FileText, FileSpreadsheet } from 'lucide-react';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import { Download, FileText, FileSpreadsheet, X, CheckCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useTheme } from '../context/ThemeContext';
 
@@ -7,7 +8,31 @@ const Reports = () => {
     const { theme } = useTheme();
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    const [selectedPortfolioId, setSelectedPortfolioId] = React.useState('');
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [downloadType, setDownloadType] = useState(null); // 'PDF' or 'Excel'
+    const [reportDateRange, setReportDateRange] = useState({ from: '', to: '' });
+    const [isDownloaded, setIsDownloaded] = useState(false);
+
+    const handleDownloadClick = (type) => {
+        setDownloadType(type);
+        setShowDownloadModal(true);
+        setIsDownloaded(false);
+        setReportDateRange({ from: '', to: '' });
+    };
+
+    const handleGenerateDownload = () => {
+        if (reportDateRange.from && reportDateRange.to) {
+            if (new Date(reportDateRange.from) > new Date(reportDateRange.to)) {
+                alert("Invalid Date Range: 'From Date' cannot be after 'To Date'. Please select a correct range.");
+                return;
+            }
+            // Simulate Download
+            setIsDownloaded(true);
+        } else {
+            alert("Please select both dates");
+        }
+    };
 
     // Mock Data for Portfolios
     const mockPortfolios = {
@@ -187,15 +212,90 @@ const Reports = () => {
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Select format to download report:</p>
 
                         <div className="space-y-4">
-                            <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
+                            <button
+                                onClick={() => handleDownloadClick('PDF')}
+                                className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
                                 <FileText size={18} className="mr-2" /> Download PDF
                             </button>
-                            <button className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
+                            <button
+                                onClick={() => handleDownloadClick('Excel')}
+                                className="w-full bg-gray-900 dark:bg-gray-700 text-white px-4 py-3 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium flex items-center justify-center transition-colors">
                                 <FileSpreadsheet size={18} className="mr-2" /> Download Excel
                             </button>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Download Modal - Same style as Dashboard */}
+            {showDownloadModal && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Download {downloadType}</h3>
+                            <button
+                                onClick={() => setShowDownloadModal(false)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            {!isDownloaded ? (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">From Date</label>
+                                            <input
+                                                type="date"
+                                                value={reportDateRange.from}
+                                                onChange={(e) => setReportDateRange({ ...reportDateRange, from: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">To Date</label>
+                                            <input
+                                                type="date"
+                                                value={reportDateRange.to}
+                                                onChange={(e) => setReportDateRange({ ...reportDateRange, to: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleGenerateDownload}
+                                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                    >
+                                        Download
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="text-center space-y-2">
+                                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-2">
+                                            <CheckCircle size={24} />
+                                        </div>
+                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">Download Initiated</h4>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            Your {downloadType} report for period {reportDateRange.from} to {reportDateRange.to} has been generated.
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        onClick={() => setShowDownloadModal(false)}
+                                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md shadow-blue-500/20 transition-colors"
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );
