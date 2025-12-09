@@ -59,8 +59,8 @@ const MainLayout = () => {
                         <Route path="/client-details/delete" element={<ClientDelete />} />
                         <Route path="/client-details/:portfolioId" element={<ClientDetails />} />
                         <Route path="/asset-details" element={<AssetDetails />} />
-                        <Route path="/asset-details/equity" element={<EquityMaster />} />
-                        <Route path="/asset-details/bond" element={<BondMaster />} />
+                        <Route path="/master/equity" element={<EquityMaster />} />
+                        <Route path="/master/bond" element={<BondMaster />} />
                         <Route path="/transactions" element={<Transactions />} />
                         <Route path="/transaction-details" element={<TransactionDetails />} />
                         <Route path="/corporate-action" element={<Navigate to="/corporate-action/voluntary" replace />} />

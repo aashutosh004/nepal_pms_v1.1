@@ -30,14 +30,20 @@ const Sidebar = ({ isOpen, onClose }) => {
             path: '/master',
             roles: ['Investment Manager'],
             subItems: [
-                { name: 'Security Master', icon: FileText, path: '/master/security' },
+                {
+                    name: 'Security Master',
+                    icon: FileText,
+                    path: '/master/security',
+                    subItems: [
+                        { name: 'Equity Master', icon: FileText, path: '/master/equity' },
+                        { name: 'Bond Master', icon: FileText, path: '/master/bond' }
+                    ]
+                },
                 { name: 'Broker Master', icon: FileText, path: '/master/broker' },
                 { name: 'Holiday Master', icon: FileText, path: '/master/holiday' },
                 { name: 'Currency Master', icon: FileText, path: '/master/currency' },
                 { name: 'Validation Master', icon: FileText, path: '/master/validation' },
-                { name: 'User Profile Master', icon: User, path: '/master/user-profile' },
-                { name: 'Equity Master', icon: FileText, path: '/asset-details/equity' },
-                { name: 'Bond Master', icon: FileText, path: '/asset-details/bond' }
+                { name: 'User Profile Master', icon: User, path: '/master/user-profile' }
             ]
         },
         {
@@ -83,6 +89,56 @@ const Sidebar = ({ isOpen, onClose }) => {
         return `${user.name} (IM)`;
     };
 
+    const renderMenuItem = (item, level = 0) => {
+        const isActive = location.pathname === item.path || (item.subItems && item.subItems.some(sub => location.pathname === sub.path || (sub.subItems && sub.subItems.some(subSub => location.pathname === subSub.path))));
+        const isExpanded = expanded[item.name];
+        const hasSubItems = item.subItems && item.subItems.length > 0;
+        const paddingLeft = level * 12 + 12; // Dynamic padding based on level
+
+        return (
+            <div key={item.name}>
+                <div
+                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 hover:scale-[1.02] ${isActive ? 'bg-blue-600 text-white shadow-md shadow-black/20 font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white'} ${level > 0 ? 'text-sm py-2' : ''}`}
+                    style={{ paddingLeft: `${paddingLeft}px` }}
+                >
+                    <Link
+                        to={item.path}
+                        className="flex items-center space-x-3 flex-1"
+                        onClick={(e) => {
+                            if (item.name === 'Master' || item.name === 'Security Master') {
+                                e.preventDefault();
+                                toggleExpand(item.name);
+                            } else if (window.innerWidth < 768) {
+                                onClose();
+                            }
+                        }}
+                    >
+                        <item.icon size={level === 0 ? 20 : 16} />
+                        <span>{item.name}</span>
+                    </Link>
+                    {hasSubItems && (
+                        <div
+                            className="p-1 hover:bg-blue-700 rounded text-gray-300"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleExpand(item.name);
+                            }}
+                        >
+                            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </div>
+                    )}
+                </div>
+
+                {hasSubItems && isExpanded && (
+                    <div className={`space-y-1 ${level === 0 ? 'mt-1 mb-2' : ''} border-l-2 border-blue-800 ml-4`}>
+                        {item.subItems.map((sub) => renderMenuItem(sub, level + 1))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
         <>
             {/* Mobile Overlay */}
@@ -116,60 +172,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-                    {filteredMenuItems.map((item) => {
-                        const isActive = location.pathname === item.path || (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
-                        const isExpanded = expanded[item.name];
-                        const hasSubItems = item.subItems && item.subItems.length > 0;
-
-                        return (
-                            <div key={item.name}>
-                                <div
-                                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 hover:scale-[1.02] ${isActive ? 'bg-blue-600 text-white shadow-md shadow-black/20 font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white'}`}
-                                >
-                                    <Link
-                                        to={item.path}
-                                        className="flex items-center space-x-3 flex-1"
-                                        onClick={() => {
-                                            if (window.innerWidth < 768) onClose();
-                                        }}
-                                    >
-                                        <item.icon size={20} />
-                                        <span>{item.name}</span>
-                                    </Link>
-                                    {hasSubItems && (
-                                        <div
-                                            className="p-1 hover:bg-blue-700 rounded text-gray-300"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                toggleExpand(item.name);
-                                            }}
-                                        >
-                                            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {hasSubItems && isExpanded && (
-                                    <div className="ml-8 mt-1 space-y-1 border-l-2 border-blue-800 pl-2">
-                                        {item.subItems.map((sub) => (
-                                            <Link
-                                                key={sub.name}
-                                                to={sub.path}
-                                                className={`flex items-center space-x-3 p-2 rounded-lg text-sm transition-all duration-300 ease-out hover:translate-x-2 ${location.pathname === sub.path ? 'text-white font-bold bg-blue-600' : 'text-gray-400 hover:text-white hover:bg-blue-800/50'}`}
-                                                onClick={() => {
-                                                    if (window.innerWidth < 768) onClose();
-                                                }}
-                                            >
-                                                <sub.icon size={16} />
-                                                <span>{sub.name}</span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                    {filteredMenuItems.map((item) => renderMenuItem(item))}
                 </nav>
                 <div className="p-4 border-t border-blue-800">
                     <div className="flex flex-col gap-4">
