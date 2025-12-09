@@ -170,7 +170,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </button>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <nav className="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
                     {filteredMenuItems.map((item) => renderMenuItem(item))}
                 </nav>
                 <div className="p-3 bg-[#1A2A80]">
