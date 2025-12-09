@@ -286,8 +286,8 @@ const Settings = () => {
         <div className="p-8 space-y-6 bg-gray-50 min-h-screen dark:bg-gray-900 transition-colors duration-200">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex min-h-[600px]">
                 {/* Internal Sidebar */}
-                <div className="w-64 bg-[#0f172a] text-gray-300 flex-shrink-0 flex flex-col">
-                    <div className="p-6 border-b border-gray-800">
+                <div className="w-64 bg-[#3B38A0] text-gray-300 flex-shrink-0 flex flex-col">
+                    <div className="p-6 border-b border-[#6749E9]">
                         <h2 className="text-lg font-bold text-white">Settings</h2>
                     </div>
 
@@ -297,8 +297,8 @@ const Settings = () => {
                                 key={item.name}
                                 onClick={() => setActiveTab(item.name)}
                                 className={`px-6 py-4 cursor-pointer text-sm font-medium transition-colors flex items-center space-x-3 ${activeTab === item.name
-                                    ? 'bg-[#1e293b] text-white border-l-4 border-blue-500'
-                                    : 'hover:bg-[#1e293b] hover:text-white border-l-4 border-transparent'
+                                    ? 'bg-[#6749E9] text-white border-l-4 border-[#B2B0E8]'
+                                    : 'hover:bg-[#6749E9] hover:text-white border-l-4 border-transparent'
                                     }`}
                             >
                                 <item.icon size={18} />

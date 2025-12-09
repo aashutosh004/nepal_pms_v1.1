@@ -97,7 +97,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         return (
             <div key={item.name}>
                 <div
-                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 hover:scale-[1.02] ${isActive ? 'bg-blue-600 text-white shadow-md shadow-black/20 font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white'} ${level > 0 ? 'text-sm py-2' : ''}`}
+                    className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 hover:scale-[1.02] ${isActive ? 'bg-[#6749E9] text-white shadow-md shadow-black/20 font-semibold' : 'text-gray-200 hover:bg-[#6749E9] hover:text-white'} ${level > 0 ? 'text-sm py-2' : ''}`}
                     style={{ paddingLeft: `${paddingLeft}px` }}
                 >
                     <Link
@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </Link>
                     {hasSubItems && (
                         <div
-                            className="p-1 hover:bg-blue-700 rounded text-gray-300"
+                            className="p-1 hover:bg-[#6749E9] rounded text-gray-300"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -130,7 +130,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 {hasSubItems && isExpanded && (
-                    <div className={`space-y-1 ${level === 0 ? 'mt-1 mb-2' : ''} border-l-2 border-blue-800 ml-4`}>
+                    <div className={`space-y-1 ${level === 0 ? 'mt-1 mb-2' : ''} border-l-2 border-[#6749E9] ml-4`}>
                         {item.subItems.map((sub) => renderMenuItem(sub, level + 1))}
                     </div>
                 )}
@@ -150,19 +150,19 @@ const Sidebar = ({ isOpen, onClose }) => {
 
             {/* Sidebar */}
             <div className={`
-                fixed left-0 top-0 h-screen bg-[#003366] text-white flex flex-col z-30
+                fixed left-0 top-0 h-screen bg-[#3B38A0] text-white flex flex-col z-30
                 transition-transform duration-300 ease-in-out w-64
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:translate-x-0
             `}>
-                <div className="p-6 border-b border-blue-800 flex justify-between items-center">
-                    <div className="bg-white/90 p-2 rounded-lg shadow-lg shadow-blue-900/50 backdrop-blur-sm">
+                <div className="p-6 bg-[#B2B0E8] flex justify-between items-center">
+                    <div>
                         <img src={logo} alt="NIMB PMS" className="h-16 w-auto" />
                     </div>
                     {/* Close button for mobile */}
                     <button
                         onClick={onClose}
-                        className="md:hidden text-gray-400 hover:text-white"
+                        className="md:hidden text-gray-700 hover:text-white"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -173,20 +173,19 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     {filteredMenuItems.map((item) => renderMenuItem(item))}
                 </nav>
-                <div className="p-4 border-t border-blue-800">
-                    <div className="flex flex-col gap-4">
+                <div className="p-3 bg-[#1A2A80]">
+                    <div className="flex flex-col gap-2 items-center text-center">
                         <div>
-                            <div className="text-sm text-gray-400">Logged in as</div>
+                            <div className="text-xs text-gray-400">Logged in as</div>
                             <div className="font-semibold text-sm text-white">{getDisplayName()}</div>
                         </div>
                         <button
                             onClick={logout}
-                            className="group relative flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-red-400 shadow-sm hover:shadow-lg hover:shadow-red-500/20 hover:bg-gradient-to-r hover:from-red-900/80 hover:to-red-800/80 hover:text-white hover:border-transparent transition-all duration-300 ease-out overflow-hidden"
+                            className="group flex items-center justify-center gap-3 w-fit px-4 py-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white hover:text-red-600 hover:shadow-lg"
                             title="Logout"
                         >
-                            <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                            <LogOut size={18} className="relative z-10 group-hover:-translate-x-1 transition-transform duration-300" />
-                            <span className="relative z-10 font-semibold text-sm tracking-wide">Logout</span>
+                            <LogOut size={18} />
+                            <span className="font-semibold text-sm tracking-wide">Logout</span>
                         </button>
                     </div>
                 </div>
