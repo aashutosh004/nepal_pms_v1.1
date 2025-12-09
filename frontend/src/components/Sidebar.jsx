@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, PieChart, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database } from 'lucide-react';
+import { LayoutDashboard, Wallet, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database, CircleDollarSign, PiggyBank, Coins, DollarSign, Lock, Calendar, Banknote, Eye, UserCog } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { name: 'Dashboard', icon: LayoutDashboard, path: '/', roles: ['Admin', 'Investment Manager'] },
         {
             name: 'Portfolio',
-            icon: PieChart,
+            icon: PiggyBank,
             path: '/portfolio',
             roles: ['Investment Manager'],
             subItems: [
@@ -32,37 +32,36 @@ const Sidebar = ({ isOpen, onClose }) => {
             subItems: [
                 {
                     name: 'Security Master',
-                    icon: FileText,
+                    icon: Lock,
                     path: '/master/security',
                     subItems: [
                         { name: 'Equity Master', icon: FileText, path: '/master/equity' },
                         { name: 'Bond Master', icon: FileText, path: '/master/bond' }
                     ]
                 },
-                { name: 'Broker Master', icon: FileText, path: '/master/broker' },
-                { name: 'Holiday Master', icon: FileText, path: '/master/holiday' },
-                { name: 'Currency Master', icon: FileText, path: '/master/currency' },
-                { name: 'Validation Master', icon: FileText, path: '/master/validation' },
+                { name: 'Broker Master', icon: UserCog, path: '/master/broker' },
+                { name: 'Holiday Master', icon: Calendar, path: '/master/holiday' },
+                { name: 'Currency Master', icon: Banknote, path: '/master/currency' },
                 { name: 'User Profile Master', icon: User, path: '/master/user-profile' }
             ]
         },
         {
             name: 'Asset Details',
-            icon: FileText,
+            icon: Coins,
             path: '/asset-details',
             roles: ['Investment Manager'],
             subItems: [
-                { name: 'Overview', icon: FileText, path: '/asset-details' }
+                { name: 'Overview', icon: Eye, path: '/asset-details' }
             ]
         },
         {
             name: 'Transactions',
-            icon: FileText,
+            icon: DollarSign,
             path: '/transactions',
             roles: ['Investment Manager'],
             subItems: [
-                { name: 'Overview', icon: FileText, path: '/transactions' },
-                { name: 'Transaction Details', icon: FileText, path: '/transaction-details' }
+                { name: 'Overview', icon: Eye, path: '/transactions' },
+                { name: 'Transaction Details', icon: CircleDollarSign, path: '/transaction-details' }
             ]
         },
         {

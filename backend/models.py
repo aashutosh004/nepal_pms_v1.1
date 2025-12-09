@@ -92,11 +92,23 @@ class Transaction(Base):
 
     TransactionID = Column(Integer, primary_key=True, index=True)
     PortfolioID = Column(Integer, ForeignKey("portfolios.PortfolioID"))
-    AssetID = Column(Integer, ForeignKey("assets.AssetID"))
-    Type = Column(String) # Buy, Sell
+    AssetID = Column(Integer, ForeignKey("assets.AssetID"), nullable=True) # Made nullable as manual transactions might not link immediately
+    
+    # Core Fields
+    TransID = Column(String) # For "Transaction ID" (TXN-NEW...)
+    TradeDate = Column(Date, default=datetime.utcnow)
+    SettlementDate = Column(Date)
+    SecurityName = Column(String)
+    ISIN = Column(String)
+    Type = Column(String) # Buy, Sell (Transaction Type)
+    Exchange = Column(String) # NSE, BSE
     Quantity = Column(Integer)
     Price = Column(Float)
-    TransactionDate = Column(DateTime, default=datetime.utcnow)
+    Amount = Column(Float) # Calculated
+    Currency = Column(String, default="INR")
+    Broker = Column(String)
+    BrokerFees = Column(Float)
+    TransactionDate = Column(DateTime, default=datetime.utcnow) # Kept for legacy/audit
 
     portfolio = relationship("Portfolio", back_populates="transactions")
     asset = relationship("Asset", back_populates="transactions")

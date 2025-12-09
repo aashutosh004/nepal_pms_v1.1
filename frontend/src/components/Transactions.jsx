@@ -88,14 +88,42 @@ const Transactions = () => {
 
         const reader = new FileReader();
         reader.onload = (evt) => {
-            const bstr = evt.target.result;
-            const wb = XLSX.read(bstr, { type: 'binary' });
-            const wsname = wb.SheetNames[0];
-            const ws = wb.Sheets[wsname];
-            const data = XLSX.utils.sheet_to_json(ws);
-            setUploadedTransactions(data);
-            alert("File uploaded successfully! Check Transaction Details.");
-            // Optional: navigate('/transaction-details');
+            try {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json(ws);
+
+                if (data.length === 0) {
+                    alert("The uploaded file is empty.");
+                    return;
+                }
+
+                // Required Columns
+                const requiredColumns = [
+                    'Transaction ID', 'Trade Date', 'Settlement Date', 'Security Name',
+                    'ISIN', 'Transaction Type', 'Exchange', 'Quantity', 'Price',
+                    'Amount', 'Currency', 'Broker', 'Broker Fees'
+                ];
+
+                // Check headers from the first row keys
+                const fileHeaders = Object.keys(data[0]);
+                const missingColumns = requiredColumns.filter(col => !fileHeaders.includes(col));
+
+                if (missingColumns.length > 0) {
+                    alert(`Error: The following required columns are missing:\n${missingColumns.join(', ')}`);
+                    // Clear the input so user can try again
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                    return;
+                }
+
+                setUploadedTransactions(data);
+                alert("File uploaded successfully! Check Transaction Details.");
+            } catch (error) {
+                console.error("Error processing file:", error);
+                alert("Error processing file. Please ensure it is a valid CSV or Excel file.");
+            }
         };
         reader.readAsBinaryString(file);
     };
@@ -112,8 +140,24 @@ const Transactions = () => {
         setSortConfig({ key, direction });
     };
 
+    const [filterDates, setFilterDates] = useState({ startDate: '', endDate: '' });
+
+    const handleDateFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilterDates(prev => ({ ...prev, [name]: value }));
+    };
+
     const sortedTransactions = React.useMemo(() => {
         let sortableItems = [...transactions];
+
+        // Date Filtering
+        if (filterDates.startDate) {
+            sortableItems = sortableItems.filter(item => new Date(item.date) >= new Date(filterDates.startDate));
+        }
+        if (filterDates.endDate) {
+            sortableItems = sortableItems.filter(item => new Date(item.date) <= new Date(filterDates.endDate));
+        }
+
         if (sortConfig.key !== null) {
             sortableItems.sort((a, b) => {
                 if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -126,7 +170,7 @@ const Transactions = () => {
             });
         }
         return sortableItems;
-    }, [transactions, sortConfig]);
+    }, [transactions, sortConfig, filterDates]);
 
     const SortIcon = ({ columnKey }) => {
         if (sortConfig.key !== columnKey) return <div className="w-4 h-4 ml-1 inline-block"></div>;
@@ -245,7 +289,31 @@ const Transactions = () => {
 
                     {/* Transaction History Table */}
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-                        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Transaction History</h2>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Current Transaction Details</h2>
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">From:</span>
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={filterDates.startDate}
+                                        onChange={handleDateFilterChange}
+                                        className="p-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">To:</span>
+                                    <input
+                                        type="date"
+                                        name="endDate"
+                                        value={filterDates.endDate}
+                                        onChange={handleDateFilterChange}
+                                        className="p-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead className="bg-gray-50 dark:bg-gray-700">
