@@ -42,16 +42,12 @@ const UserProfileMaster = () => {
 
     return (
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
-            <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">User Profile Master</h1>
-            </div>
+
 
             <div className="max-w-4xl mx-auto">
                 <form onSubmit={handleCreateUser} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center mb-6">
-                        <UserPlus className="text-blue-600 mr-2" size={24} />
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Create New User</h2>
-                    </div>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">User Profile Master</h2>
+
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
