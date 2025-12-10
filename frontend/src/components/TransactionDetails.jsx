@@ -174,7 +174,7 @@ const TransactionDetails = () => {
     return (
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction Details</h1>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction History</h1>
                 <button
                     onClick={() => setIsIdModalOpen(true)}
                     className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
@@ -309,6 +309,7 @@ const TransactionDetails = () => {
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
                                         <select name="currency" value={formData.currency} onChange={handleInputChange} className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <option value="INR">INR</option>
+                                            <option value="NPR">NPR</option>
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
                                         </select>

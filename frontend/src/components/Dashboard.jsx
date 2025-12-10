@@ -175,7 +175,7 @@ const Dashboard = () => {
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm flex flex-col justify-center transition-colors duration-200 h-64">
                             <h3 className="text-gray-900 dark:text-gray-100 font-bold text-lg mb-2">Total Portfolio Value</h3>
                             <p className="text-4xl font-bold text-gray-800 dark:text-white">
-                                ${portfolio.TotalValue.toLocaleString()}
+                                NPR {portfolio.TotalValue.toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Updated just now</p>
                         </div>
@@ -218,7 +218,7 @@ const Dashboard = () => {
                                         <Tooltip
                                             contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
                                             itemStyle={{ color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                            formatter={(value) => [`$${value.toLocaleString()}`, 'Portfolio Value']}
+                                            formatter={(value) => [`NPR ${value.toLocaleString()}`, 'Portfolio Value']}
                                         />
                                         <Area
                                             type="monotone"
@@ -255,7 +255,7 @@ const Dashboard = () => {
                                         </Pie>
                                         <Tooltip
                                             contentStyle={{ backgroundColor: isDarkMode ? '#1f2937' : '#fff', borderColor: isDarkMode ? '#374151' : '#e5e7eb', color: isDarkMode ? '#f3f4f6' : '#1f2937' }}
-                                            formatter={(value) => `$${value.toLocaleString()}`}
+                                            formatter={(value) => `NPR ${value.toLocaleString()}`}
                                         />
                                         <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ color: isDarkMode ? '#9ca3af' : '#9ca3af' }} />
                                     </PieChart>
@@ -269,7 +269,7 @@ const Dashboard = () => {
                                     {proposals.map((p, i) => (
                                         <div key={i} className="text-xs text-gray-600 dark:text-gray-400 flex justify-between">
                                             <span>{p.Action}</span>
-                                            <span>${p.Amount.toLocaleString()}</span>
+                                            <span>NPR {p.Amount.toLocaleString()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -284,14 +284,14 @@ const Dashboard = () => {
                                     <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
                                             <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Asset Class</th>
-                                            <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Gain/Loss ($)</th>
+                                            <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 dark:text-gray-300 uppercase">Gain/Loss (NPR)</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                                         {gainLossData.map((item, idx) => (
                                             <tr key={idx}>
                                                 <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 font-medium">{item.class}</td>
-                                                <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200 font-bold">${item.value.toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-200 font-bold">NPR {item.value.toLocaleString()}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -368,11 +368,11 @@ const Dashboard = () => {
                                                 setGeneratedReport({
                                                     dateRange: `${reportDateRange.from} to ${reportDateRange.to}`,
                                                     data: [
-                                                        { id: 1, type: 'Equity', return: '12.5%', value: '$45,000' },
-                                                        { id: 2, type: 'Debt', return: '8.2%', value: '$30,000' },
-                                                        { id: 3, type: 'Mutual Funds', return: '15.1%', value: '$25,000' }
+                                                        { id: 1, type: 'Equity', return: '12.5%', value: 'NPR 45,000' },
+                                                        { id: 2, type: 'Debt', return: '8.2%', value: 'NPR 30,000' },
+                                                        { id: 3, type: 'Mutual Funds', return: '15.1%', value: 'NPR 25,000' }
                                                     ],
-                                                    totalValue: '$100,000'
+                                                    totalValue: 'NPR 100,000'
                                                 });
                                             } else {
                                                 alert("Please select both dates");

@@ -67,7 +67,7 @@ const ClientDetails = () => {
                                         <td className="p-4 text-gray-900 dark:text-white font-medium">{p.PortfolioName}</td>
                                         <td className="p-4 text-gray-600 dark:text-gray-300">{p.ClientName}</td>
                                         <td className="p-4 text-gray-600 dark:text-gray-300">{p.PortfolioType}</td>
-                                        <td className="p-4 text-gray-600 dark:text-gray-300">${p.TotalValue?.toLocaleString()}</td>
+                                        <td className="p-4 text-gray-600 dark:text-gray-300">NPR {p.TotalValue?.toLocaleString()}</td>
                                         <td className="p-4">
                                             <button
                                                 onClick={() => navigate(`/client-details/${p.PortfolioID}`)}

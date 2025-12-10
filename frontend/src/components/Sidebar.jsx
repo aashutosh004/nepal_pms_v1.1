@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Wallet, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database, CircleDollarSign, PiggyBank, Coins, DollarSign, Lock, Calendar, Banknote, Eye, UserCog } from 'lucide-react';
+import { LayoutDashboard, Wallet, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database, CircleDollarSign, PiggyBank, Coins, DollarSign, Lock, Calendar, Banknote, Eye, UserCog, BookUser } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
@@ -42,6 +42,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 { name: 'Broker Master', icon: UserCog, path: '/master/broker' },
                 { name: 'Holiday Master', icon: Calendar, path: '/master/holiday' },
                 { name: 'Currency Master', icon: Banknote, path: '/master/currency' },
+                { name: 'Client Master', icon: BookUser, path: '/master/client' },
                 { name: 'User Profile Master', icon: User, path: '/master/user-profile' }
             ]
         },
@@ -61,7 +62,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             roles: ['Investment Manager'],
             subItems: [
                 { name: 'Overview', icon: Eye, path: '/transactions' },
-                { name: 'Transaction Details', icon: CircleDollarSign, path: '/transaction-details' }
+                { name: 'Transaction History', icon: CircleDollarSign, path: '/transaction-details' }
             ]
         },
         {

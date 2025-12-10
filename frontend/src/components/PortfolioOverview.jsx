@@ -219,9 +219,9 @@ const PortfolioOverview = () => {
                                 <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                                     <th className="pb-2">Asset</th>
                                     <th className="pb-2">Qty</th>
-                                    <th className="pb-2">Value ($)</th>
+                                    <th className="pb-2">Value (NPR)</th>
                                     <th className="pb-2">% Alloc</th>
-                                    <th className="pb-2">Gain/Loss ($)</th>
+                                    <th className="pb-2">Gain/Loss (NPR)</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -229,9 +229,9 @@ const PortfolioOverview = () => {
                                     <tr key={i} className="text-gray-800 dark:text-gray-200">
                                         <td className="py-2 font-medium">{h.Asset.AssetName}</td>
                                         <td className="py-2">{h.Quantity}</td>
-                                        <td className="py-2">${h.MarketValue.toLocaleString()}</td>
+                                        <td className="py-2">NPR {h.MarketValue.toLocaleString()}</td>
                                         <td className="py-2">{h.Allocation.toFixed(0)}%</td>
-                                        <td className="py-2 text-green-600 dark:text-green-400">$500</td> {/* Dummy Gain/Loss */}
+                                        <td className="py-2 text-green-600 dark:text-green-400">NPR 500</td> {/* Dummy Gain/Loss */}
                                     </tr>
                                 ))}
                             </tbody>

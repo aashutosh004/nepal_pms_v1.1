@@ -42,6 +42,7 @@ const Transactions = () => {
 
     const [formData, setFormData] = useState({
         securityType: '',
+        securityName: '',
         type: 'Buy',
         date: '',
         quantity: '',
@@ -66,6 +67,7 @@ const Transactions = () => {
             date: formData.date,
             type: formData.type,
             securityType: formData.securityType,
+            securityName: formData.securityName,
             quantity: Number(formData.quantity),
             price: Number(formData.price),
             amount: Number(formData.quantity) * Number(formData.price)
@@ -79,7 +81,7 @@ const Transactions = () => {
             }
         }));
 
-        setFormData({ securityType: '', type: 'Buy', date: '', quantity: '', price: '' });
+        setFormData({ securityType: '', securityName: '', type: 'Buy', date: '', quantity: '', price: '' });
     };
 
     const handleFileUpload = (e) => {
@@ -220,21 +222,40 @@ const Transactions = () => {
                     {/* Add Transaction Form */}
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Add Transaction</h2>
+                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Create New Transaction</h2>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <select
                                     name="securityType"
                                     value={formData.securityType}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            securityType: e.target.value,
+                                            securityName: '' // Reset security name when asset type changes
+                                        }));
+                                    }}
                                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                 >
-                                    <option value="" disabled>Select Security</option>
-                                    <option value="EQ">EQ</option>
-                                    <option value="FI">FI</option>
+                                    <option value="" disabled>Select Asset</option>
+                                    <option value="Security">Select Security</option>
                                 </select>
                             </div>
+                            {formData.securityType === 'Security' && (
+                                <div>
+                                    <select
+                                        name="securityName"
+                                        value={formData.securityName}
+                                        onChange={handleInputChange}
+                                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    >
+                                        <option value="" disabled>Select Security</option>
+                                        <option value="ACC Cement">ACC Cement</option>
+                                        <option value="IDFC Bond">IDFC Bond</option>
+                                    </select>
+                                </div>
+                            )}
                             <div>
                                 <select
                                     name="type"
@@ -356,8 +377,8 @@ const Transactions = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.date}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.type}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{transaction.quantity}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.price}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">${transaction.amount.toLocaleString()}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">NPR {transaction.price}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">NPR {transaction.amount.toLocaleString()}</td>
                                         </tr>
                                     ))}
                                 </tbody>

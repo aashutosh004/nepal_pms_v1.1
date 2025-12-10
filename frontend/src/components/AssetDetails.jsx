@@ -102,7 +102,7 @@ const AssetDetails = () => {
                 </div>
                 <div>
                     <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Current Price:</span>
-                    <span className="ml-2 text-xl font-bold text-black">$50</span>
+                    <span className="ml-2 text-xl font-bold text-black">NPR 5000</span>
                 </div>
             </div>
 
