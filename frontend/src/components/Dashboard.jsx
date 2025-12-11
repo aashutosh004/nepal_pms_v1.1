@@ -89,6 +89,15 @@ const Dashboard = () => {
     const [showReportModal, setShowReportModal] = useState(false);
     const [reportDateRange, setReportDateRange] = useState({ from: '', to: '' });
     const [generatedReport, setGeneratedReport] = useState(null);
+
+    // Withdraw Modal State
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+    const [withdrawForm, setWithdrawForm] = useState({
+        fromAccount: '',
+        units: '',
+        amount: '',
+        bankAccount: ''
+    });
     const navigate = useNavigate();
     const { theme } = useTheme();
 
@@ -146,7 +155,10 @@ const Dashboard = () => {
                 <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
                     Add Investment
                 </button>
-                <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
+                <button
+                    onClick={() => setShowWithdrawModal(true)}
+                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
+                >
                     Withdraw Funds
                 </button>
                 <button
@@ -430,6 +442,122 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Withdraw Funds Modal */}
+            {showWithdrawModal && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
+                        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center bg-gray-50 dark:bg-gray-900/50">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex-1">Withdraw Funds</h3>
+                            <button
+                                onClick={() => setShowWithdrawModal(false)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-5">
+                            {/* From Account */}
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">From account</label>
+                                <select
+                                    className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    value={withdrawForm.fromAccount}
+                                    onChange={(e) => setWithdrawForm({ ...withdrawForm, fromAccount: e.target.value })}
+                                >
+                                    <option value="">Select account</option>
+                                    {Object.keys(mockPortfolios).map(pid => (
+                                        <option key={pid} value={pid}>{pid}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Total available units */}
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Total available units</label>
+                                <div className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                    1000
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Units currently available to withdraw.</p>
+                            </div>
+
+                            {/* Withdraw units */}
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 flex justify-between">
+                                    Withdraw units
+                                    {/* Mock Magnifier Icon if needed, using simple Unicode or Lucide for now */}
+                                </label>
+                                <input
+                                    type="number"
+                                    placeholder="Enter units to withdraw"
+                                    className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    value={withdrawForm.units}
+                                    onChange={(e) => {
+                                        const units = e.target.value;
+                                        setWithdrawForm({
+                                            ...withdrawForm,
+                                            units,
+                                            // Simple mock logic: if amount is empty, calculate it? Or vice versa. The requirement says Auto-calculated estimated amount below.
+                                        });
+                                    }}
+                                />
+                            </div>
+
+                            <div className="flex gap-4">
+                                {/* Withdraw amount */}
+                                <div className="flex-1 space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Withdraw amount</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Enter amount"
+                                        className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={withdrawForm.amount}
+                                        onChange={(e) => setWithdrawForm({ ...withdrawForm, amount: e.target.value })}
+                                    />
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                        Optional. If left blank, amount will be derived from units and latest NAV.
+                                    </p>
+                                </div>
+                                {/* Bank Account */}
+                                <div className="flex-1 space-y-1">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Bank account</label>
+                                    <select
+                                        className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={withdrawForm.bankAccount}
+                                        onChange={(e) => setWithdrawForm({ ...withdrawForm, bankAccount: e.target.value })}
+                                    >
+                                        <option value="">Select bank account</option>
+                                        <option value="NIBL-001">NIBL - ****1234</option>
+                                        <option value="Nabil-002">Nabil - ****5678</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Estimated Amount */}
+                            <div className="space-y-1">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Estimated amount (based on NAV)</label>
+                                <div className="w-full p-2.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                    ₹{withdrawForm.units ? (parseFloat(withdrawForm.units) * 150).toFixed(2) : '0.00'}
+                                </div>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                                    Auto-calculated using latest NAV (example NAV ₹150.00).
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    alert(`Withdraw request submitted for ${withdrawForm.units} units from ${withdrawForm.fromAccount}.`);
+                                    setShowWithdrawModal(false);
+                                }}
+                                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-md shadow-md transition-colors mt-2"
+                            >
+                                Withdraw
+                            </button>
                         </div>
                     </div>
                 </div>,
