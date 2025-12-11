@@ -263,10 +263,23 @@ def get_all_portfolios(db: Session = Depends(get_db)):
         results.append({
             "PortfolioID": p.PortfolioID,
             "PortfolioName": p.PortfolioName,
-            "PortfolioType": p.PortfolioType,
             "TotalValue": p.TotalValue,
             "ClientName": p.NomineeName or f"Client {p.PortfolioID}",
-            "UserID": f"USER-{p.PortfolioID}"
+            "UserID": f"USER-{p.PortfolioID}",
+            # Full Details for Client Master Table
+            "PortfolioType": p.PortfolioType,
+            "ProductType": p.ProductType,
+            "PortfolioLevel": p.PortfolioLevel,
+            "RiskLevel": p.RiskLevel,
+            "RelationshipManager": p.RelationshipManager,
+            "BankName": p.BankName,
+            "BankAccountNo": p.BankAccountNo,
+            "IfscCode": p.IfscCode,
+            "BrokerName": p.BrokerName,
+            "BrokerAccountNo": p.BrokerAccountNo,
+            "NomineeName": p.NomineeName,
+            "AllocationPercentage": p.AllocationPercentage,
+            "Relationship": p.Relationship
         })
     return results
 
@@ -720,7 +733,8 @@ def get_users(db: Session = Depends(get_db)):
             "name": u.Name,
             "email": u.Email,
             "role": u.Role,
-            "phone": u.Phone
+            "phone": u.Phone,
+            "address": u.Address
         })
     return result
 

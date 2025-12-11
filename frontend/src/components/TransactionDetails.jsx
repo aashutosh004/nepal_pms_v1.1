@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronUp, ChevronDown, Eye, Plus, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ChevronUp, ChevronDown, Eye, Plus, X, Download } from 'lucide-react';
 import { useTransaction } from '../context/TransactionContext';
+import * as XLSX from 'xlsx';
 
 const TransactionDetails = () => {
     const { uploadedTransactions, setUploadedTransactions } = useTransaction();
@@ -8,6 +10,11 @@ const TransactionDetails = () => {
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+    // Download State
+    const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+    const [downloadStartDate, setDownloadStartDate] = useState('');
+    const [downloadEndDate, setDownloadEndDate] = useState('');
 
     // Form State
     const [formData, setFormData] = useState({
@@ -164,6 +171,48 @@ const TransactionDetails = () => {
         return sortConfig.direction === 'ascending' ? <ChevronUp size={16} className="ml-1 inline-block" /> : <ChevronDown size={16} className="ml-1 inline-block" />;
     };
 
+
+
+    // --- Download Logic ---
+    const handleDownload = (format) => {
+        let dataToExport = [...uploadedTransactions];
+
+        // Filter by Date Range if provided
+        if (downloadStartDate && downloadEndDate) {
+            dataToExport = dataToExport.filter(txn => {
+                const txnDate = txn['Trade Date'];
+                if (!txnDate) return false;
+                return txnDate >= downloadStartDate && txnDate <= downloadEndDate;
+            });
+        } else if (downloadStartDate) {
+            dataToExport = dataToExport.filter(txn => txn['Trade Date'] >= downloadStartDate);
+        } else if (downloadEndDate) {
+            dataToExport = dataToExport.filter(txn => txn['Trade Date'] <= downloadEndDate);
+        }
+
+        if (dataToExport.length === 0) {
+            alert("No transactions found for the selected date range.");
+            return;
+        }
+
+        // Create Workbook
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+
+        // Generate File
+        const dateStr = new Date().toISOString().split('T')[0];
+        const fileName = `Transactions_${dateStr}.${format === 'csv' ? 'csv' : 'xlsx'}`;
+
+        if (format === 'csv') {
+            XLSX.writeFile(workbook, fileName, { bookType: 'csv' });
+        } else {
+            XLSX.writeFile(workbook, fileName);
+        }
+
+        setIsDownloadModalOpen(false);
+    };
+
     // Dynamic Border Color based on Type
     const getTypeStyle = (type) => {
         if (type === 'BUY') return 'border-l-4 border-green-500';
@@ -174,13 +223,21 @@ const TransactionDetails = () => {
     return (
         <div className="p-8 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction History</h1>
-                <button
-                    onClick={() => setIsIdModalOpen(true)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                >
-                    <Plus size={18} /> Add Transaction
-                </button>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction Details</h1>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setIsDownloadModalOpen(true)}
+                        className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+                    >
+                        <Download size={18} /> Download
+                    </button>
+                    <button
+                        onClick={() => setIsIdModalOpen(true)}
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                    >
+                        <Plus size={18} /> Add Transaction
+                    </button>
+                </div>
             </div>
 
             {uploadedTransactions.length > 0 ? (
@@ -231,8 +288,9 @@ const TransactionDetails = () => {
             )}
 
             {/* Add Transaction Modal */}
-            {isIdModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            {/* Add Transaction Modal */}
+            {isIdModalOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                             <h2 className="text-xl font-bold text-gray-800 dark:text-white">Add New Transaction</h2>
@@ -342,12 +400,13 @@ const TransactionDetails = () => {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* View Details Modal */}
-            {isViewModalOpen && selectedTransaction && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            {isViewModalOpen && selectedTransaction && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl">
                         <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                             <h2 className="text-xl font-bold text-gray-800 dark:text-white">Transaction Details</h2>
@@ -367,7 +426,57 @@ const TransactionDetails = () => {
                             <button onClick={() => setIsViewModalOpen(false)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Close</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Download Modal */}
+            {isDownloadModalOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Download Transactions</h2>
+                            <button onClick={() => setIsDownloadModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"><X size={24} /></button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Date (Optional)</label>
+                                <input
+                                    type="date"
+                                    value={downloadStartDate}
+                                    onChange={(e) => setDownloadStartDate(e.target.value)}
+                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Date (Optional)</label>
+                                <input
+                                    type="date"
+                                    value={downloadEndDate}
+                                    onChange={(e) => setDownloadEndDate(e.target.value)}
+                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 italic">Leave dates empty to download all transactions.</p>
+
+                            <div className="grid grid-cols-2 gap-4 pt-4">
+                                <button
+                                    onClick={() => handleDownload('csv')}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded font-medium border border-gray-300 transition flex justify-center items-center"
+                                >
+                                    Download CSV
+                                </button>
+                                <button
+                                    onClick={() => handleDownload('xlsx')}
+                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition flex justify-center items-center"
+                                >
+                                    Download XLSX
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );

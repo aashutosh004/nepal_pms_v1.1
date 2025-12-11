@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -287,8 +288,8 @@ const PortfolioOverview = () => {
 
             {/* Create Portfolio Modal */}
             {
-                isCreateModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                isCreateModalOpen && createPortal(
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
                         <ClientCreationForm
                             onClose={() => setIsCreateModalOpen(false)}
                             onSuccess={(id) => {
@@ -299,7 +300,8 @@ const PortfolioOverview = () => {
                                 }
                             }}
                         />
-                    </div>
+                    </div>,
+                    document.body
                 )
             }
         </div >

@@ -62,7 +62,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             roles: ['Investment Manager'],
             subItems: [
                 { name: 'Overview', icon: Eye, path: '/transactions' },
-                { name: 'Transaction History', icon: CircleDollarSign, path: '/transaction-details' }
+                { name: 'Transaction Details', icon: CircleDollarSign, path: '/transaction-details' }
             ]
         },
         {
