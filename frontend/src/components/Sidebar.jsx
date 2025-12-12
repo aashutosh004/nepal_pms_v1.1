@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { LayoutDashboard, Wallet, FileText, Settings, Menu, X, ChevronDown, ChevronRight, User, LogOut, FileCheck, Briefcase, CheckCircle, AlertCircle, Database, CircleDollarSign, PiggyBank, Coins, DollarSign, Lock, Calendar, Banknote, Eye, UserCog, BookUser } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
 
 const Sidebar = ({ isOpen, onClose }) => {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
     const [expanded, setExpanded] = useState({ Portfolio: true });
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     const toggleExpand = (name) => {
         setExpanded(prev => ({ ...prev, [name]: !prev[name] }));
@@ -181,7 +187,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             <div className="font-semibold text-sm text-white">{getDisplayName()}</div>
                         </div>
                         <button
-                            onClick={logout}
+                            onClick={handleLogout}
                             className="group flex items-center justify-center gap-3 w-fit px-4 py-2 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white hover:text-red-600 hover:shadow-lg"
                             title="Logout"
                         >

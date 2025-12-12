@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/nimb-blue_1.png';
 import axios from 'axios';
@@ -11,6 +12,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,6 +31,7 @@ const Login = () => {
                     role: res.data.role,
                     name: res.data.name
                 });
+                navigate('/');
             }
         } catch (err) {
             console.error("Login error:", err);

@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, A
 import { AlertTriangle, CheckCircle, RefreshCw, TrendingUp, DollarSign, Activity, X, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import API_URL from '../config';
 
 const Dashboard = () => {
@@ -100,8 +101,12 @@ const Dashboard = () => {
     });
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const { user } = useAuth();
 
     const isDarkMode = theme === 'Dark' || (theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    // Restrict actions for Admin and Super Admin
+    const isRestricted = user?.role && ['admin', 'super admin'].includes(user.role.toLowerCase());
 
     useEffect(() => {
         if (selectedPortfolioId) {
@@ -152,24 +157,34 @@ const Dashboard = () => {
                     <option value="Portfolio-NIBLMF999953">Portfolio-NIBLMF999953</option>
                 </select>
 
-                <button className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
+                <button
+                    disabled={isRestricted}
+                    className={`bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors ${isRestricted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={isRestricted ? "Action restricted for Admins" : "Add Investment"}
+                >
                     Add Investment
                 </button>
                 <button
                     onClick={() => setShowWithdrawModal(true)}
-                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
+                    disabled={isRestricted}
+                    className={`bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors ${isRestricted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={isRestricted ? "Action restricted for Admins" : "Withdraw Funds"}
                 >
                     Withdraw Funds
                 </button>
                 <button
                     onClick={() => setShowReportModal(true)}
-                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors"
+                    disabled={isRestricted}
+                    className={`bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors ${isRestricted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={isRestricted ? "Action restricted for Admins" : "Generate Report"}
                 >
                     Generate Report
                 </button>
                 <button
                     onClick={() => navigate('/rebalancing')}
-                    className="bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors flex items-center"
+                    disabled={isRestricted}
+                    className={`bg-gray-900 dark:bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 text-sm font-medium transition-colors flex items-center ${isRestricted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={isRestricted ? "Action restricted for Admins" : "Rebalance Portfolio"}
                 >
                     <RefreshCw size={16} className="mr-2" /> Rebalance Portfolio
                 </button>
